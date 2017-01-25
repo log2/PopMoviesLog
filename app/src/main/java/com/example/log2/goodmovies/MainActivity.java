@@ -1,5 +1,6 @@
 package com.example.log2.goodmovies;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
@@ -31,10 +34,26 @@ public class MainActivity extends AppCompatActivity {
         });
 
         recyclerView = (RecyclerView) findViewById(R.id.rv_movies);
-        recyclerView.setHasFixedSize(false);
-        recyclerView.setAdapter(new MoviesAdapter());
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager();
-        layoutManager.setOrientation(StaggeredGridLayoutManager.VERTICAL);
+        recyclerView.setHasFixedSize(true);
+        new AsyncTask<Void, Void, JSONObject>() {
+            @Override
+            protected JSONObject doInBackground(Void... params) {
+                JSONObject jsonObject = NetworkUtils.queryTheMovieDb("/movie/popular");
+                return jsonObject;
+            }
+
+            @Override
+            protected void onPostExecute(JSONObject jsonObject) {
+                recyclerView.setAdapter(new MoviesAdapter(jsonObject));
+            }
+
+            @Override
+            protected void onCancelled() {
+                // TODO signal error
+            }
+        }.execute();
+        // TODO change orientation when device orientation changes
+        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
         layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         recyclerView.setLayoutManager(layoutManager);
     }

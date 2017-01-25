@@ -13,8 +13,14 @@ android {
     }
     buildTypes {
         release {
+            buildConfigField("String", "THEMOVIEDB_KEY", "\"" + THEMOVIEDB_KEY + "\"")
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            buildConfigField("String", "THEMOVIEDB_KEY", "\"" + THEMOVIEDB_KEY + "\"")
+            minifyEnabled false
+            applicationIdSuffix ".debug"
         }
     }
 }
