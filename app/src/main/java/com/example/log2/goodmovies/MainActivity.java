@@ -1,6 +1,7 @@
 package com.example.log2.goodmovies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -45,20 +46,31 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setClipToPadding(true);
         recyclerView.setClipChildren(true);
 
+        final Context context = this;
         MySingleton.getInstance(this).addToRequestQueue(reqHigh(theMovieDB("/movie/popular"), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                recyclerView.setAdapter(new MoviesAdapter(jsonObject));
+                recyclerView.setAdapter(new MoviesAdapter(jsonObject, new MoviesAdapter.MovieClickListener() {
+
+                    @Override
+                    public void clickMovie(int movieId) {
+                        Intent intent = new Intent(context, DetailActivity.class);
+                        intent.putExtra(Intent.EXTRA_INDEX, movieId);
+                        startActivity(intent);
+
+                    }
+                }));
             }
         }));
         // TODO change orientation when device orientation changes
-        Context context = this;
 //        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
 //        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
         GridLayoutManager layoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         layoutManager.setSmoothScrollbarEnabled(true);
         recyclerView.setLayoutManager(layoutManager);
+
     }
+
 
     @Override
     protected void onStop() {

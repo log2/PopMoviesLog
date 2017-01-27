@@ -24,9 +24,10 @@ import static com.example.log2.goodmovies.NetworkUtils.theMovieDB;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
     private static final String TAG = MoviesAdapter.class.getSimpleName();
     private final int totalResults;
+    private MovieClickListener movieClickListener;
 
-
-    public MoviesAdapter(JSONObject initialPage) {
+    public MoviesAdapter(JSONObject initialPage, MovieClickListener movieClickListener) {
+        this.movieClickListener = movieClickListener;
         try {
             this.totalResults = initialPage.getInt("total_results");
         } catch (JSONException e) {
@@ -55,7 +56,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         return totalResults;
     }
 
-
+    public interface MovieClickListener {
+        void clickMovie(int movieId);
+    }
 
     public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         //private final TextView mv_position;
@@ -69,15 +72,35 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             movieView = (ImageView) view.findViewById(R.id.movie_image);
             //mv_position = (TextView) view.findViewById(R.id.mv_position);
             this.context = context;
+            movieView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            // TODO handle click
+            movieClickListener.clickMovie(adapterPosition);
         }
 
         public void setMovie(final int position) {
+            onMovie(position, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject movieContent) {
+                    try {
+                        // w185 -> 185x277
+                        // w342 -> 342x513
+                        int expectedWidth = 342;
+                        int expectedHeight = 513;
+                        addGlideRequest(Glide.with(context).load("http://image.tmdb.org/t/p/w" + expectedWidth +
+                                movieContent.getString("poster_path")).override(expectedWidth, expectedHeight).placeholder(R.mipmap.ic_launcher)
+                                .into(movieView).getRequest());
+                    } catch (JSONException e) {
+                        throw new RuntimeException("Malformed JSON Object (item #" + position + ")", e);
+                    }
+                }
+            });
+        }
+
+        private void onMovie(final int position, final Response.Listener<JSONObject> listener) {
             final int page = 1 + position / 20;
             final int subPosition = position % 20;
             //Log.v(TAG, "Setting position of " + this + " to " + position + "(" + page + ":" + subPosition);
@@ -86,16 +109,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                 @Override
                 public void onResponse(JSONObject pageContent) {
                     try {
-                        // w185 -> 185x277
-                        // w342 -> 342x513
-                        int expectedWidth = 342;
-                        int expectedHeight = 513;
                         JSONObject item = pageContent.getJSONArray("results").getJSONObject(subPosition);
-                        addGlideRequest(Glide.with(context).load("http://image.tmdb.org/t/p/w" + expectedWidth +
-                                item.getString("poster_path")).override(expectedWidth, expectedHeight).placeholder(R.mipmap.ic_launcher)
-                                .into(movieView).getRequest());
+                        listener.onResponse(item);
                     } catch (JSONException e) {
-                        throw new RuntimeException("Malformed JSON Object on page " + page, e);
+                        throw new RuntimeException("Malformed JSON Object (item #" + position + ")", e);
                     }
                 }
             }));
