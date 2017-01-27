@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="4dp">
 
+    <!-- <TextView
+         android:id="@+id/mv_position"
+         android:layout_width="wrap_content"
+         android:layout_height="16dp"
+         android:textSize="12sp"
+         android:layout_margin="4dp"
+       />-->
     <ImageView
         android:id="@+id/movie_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="5dp" />
+        android:padding="1dp" />
 </LinearLayout>

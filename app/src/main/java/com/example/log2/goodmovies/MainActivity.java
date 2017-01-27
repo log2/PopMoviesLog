@@ -1,18 +1,23 @@
 package com.example.log2.goodmovies;
 
-import android.os.AsyncTask;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.android.volley.Response;
+
 import org.json.JSONObject;
+
+import static com.example.log2.goodmovies.NetworkUtils.reqHigh;
+import static com.example.log2.goodmovies.NetworkUtils.theMovieDB;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
@@ -20,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -35,27 +42,28 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.rv_movies);
         recyclerView.setHasFixedSize(true);
-        new AsyncTask<Void, Void, JSONObject>() {
-            @Override
-            protected JSONObject doInBackground(Void... params) {
-                JSONObject jsonObject = NetworkUtils.queryTheMovieDb("/movie/popular");
-                return jsonObject;
-            }
+        recyclerView.setClipToPadding(true);
+        recyclerView.setClipChildren(true);
 
+        MySingleton.getInstance(this).addToRequestQueue(reqHigh(theMovieDB("/movie/popular"), new Response.Listener<JSONObject>() {
             @Override
-            protected void onPostExecute(JSONObject jsonObject) {
+            public void onResponse(JSONObject jsonObject) {
                 recyclerView.setAdapter(new MoviesAdapter(jsonObject));
             }
-
-            @Override
-            protected void onCancelled() {
-                // TODO signal error
-            }
-        }.execute();
+        }));
         // TODO change orientation when device orientation changes
-        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
-        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        Context context = this;
+//        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
+//        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+        GridLayoutManager layoutManager = new GridLayoutManager(context, 4, GridLayoutManager.VERTICAL, false);
+        layoutManager.setSmoothScrollbarEnabled(true);
         recyclerView.setLayoutManager(layoutManager);
+    }
+
+    @Override
+    protected void onStop() {
+        MySingleton.getInstance(this).getRequestQueue().cancelAll(this);
+        super.onStop();
     }
 
     @Override

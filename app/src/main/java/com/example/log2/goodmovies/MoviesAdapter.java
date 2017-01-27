@@ -1,21 +1,22 @@
 package com.example.log2.goodmovies;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.squareup.picasso.Picasso;
+import com.android.volley.Response;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.Request;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import static com.example.log2.goodmovies.NetworkUtils.reqHigh;
+import static com.example.log2.goodmovies.NetworkUtils.theMovieDB;
 
 /**
  * Created by Lorenzo on 21/01/2017.
@@ -24,7 +25,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     private static final String TAG = MoviesAdapter.class.getSimpleName();
     private final int totalResults;
 
-    private Map<Integer, JSONObject> dataByPage = new HashMap<>();
 
     public MoviesAdapter(JSONObject initialPage) {
         try {
@@ -32,8 +32,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-
-        dataByPage.put(1, initialPage);
     }
 
     @Override
@@ -57,49 +55,19 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         return totalResults;
     }
 
-    private void onItem(int position, final OnItem onItem) {
-        // TODO handle cache properly!
-        final int page = position / 20 + 1;
-        final int subPosition = position % 20;
-        Log.v(TAG, "Accessing item #" + position + " (page: " + page + ", offset: " + subPosition + ")");
-        if (dataByPage.containsKey(page)) {
-            JSONObject pageContent = dataByPage.get(page);
-            doOnPageItem(pageContent, subPosition, onItem);
-        } else {
-            new AsyncTask<Integer, Void, JSONObject>() {
-                @Override
-                protected JSONObject doInBackground(Integer... page) {
-                    return NetworkUtils.queryTheMovieDb("/movie/popular", new String[]{"page", "" + page});
-                }
 
-                @Override
-                protected void onPostExecute(JSONObject pageContent) {
-                    dataByPage.put(page, pageContent);
-                    doOnPageItem(pageContent, subPosition, onItem);
-                }
-            }.execute();
-        }
-    }
-
-    private void doOnPageItem(JSONObject pageContent, int subPosition, OnItem onItem) {
-        try {
-            onItem.doOnItem(pageContent.getJSONArray("results").getJSONObject(subPosition));
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private interface OnItem {
-        void doOnItem(JSONObject item) throws JSONException;
-    }
 
     public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        //private final TextView mv_position;
         ImageView movieView;
+        Request glideRequest;
         private Context context;
+        private JsonObjectRequest volleyRequest;
 
         public MoviesViewHolder(View view, Context context) {
             super(view);
             movieView = (ImageView) view.findViewById(R.id.movie_image);
+            //mv_position = (TextView) view.findViewById(R.id.mv_position);
             this.context = context;
         }
 
@@ -109,13 +77,41 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             // TODO handle click
         }
 
-        public void setMovie(int position) {
-            onItem(position, new OnItem() {
-                public void doOnItem(JSONObject item) throws JSONException {
-                    Picasso.with(context).load("http://image.tmdb.org/t/p/w185" + item.getString("poster_path")).into(movieView);
+        public void setMovie(final int position) {
+            final int page = 1 + position / 20;
+            final int subPosition = position % 20;
+            //Log.v(TAG, "Setting position of " + this + " to " + position + "(" + page + ":" + subPosition);
+            //mv_position.setText(page + ":" + subPosition);
+            addNewRequest(reqHigh(theMovieDB("/movie/popular", new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject pageContent) {
+                    try {
+                        JSONObject item = pageContent.getJSONArray("results").getJSONObject(subPosition);
+                        addGlideRequest(Glide.with(context).load("http://image.tmdb.org/t/p/w185" +
+                                item.getString("poster_path")).override(185, 277).placeholder(R.mipmap.ic_launcher)
+                                .into(movieView).getRequest());
+                    } catch (JSONException e) {
+                        throw new RuntimeException("Malformed JSON Object on page " + page, e);
+                    }
                 }
-            });
+            }));
         }
 
+        private void addGlideRequest(Request newGlideRequest) {
+            glideRequest = newGlideRequest;
+        }
+
+        private void addNewRequest(JsonObjectRequest newVolleyRequest) {
+            if (glideRequest != null) {
+                glideRequest.clear();
+                glideRequest = null;
+            }
+            if (volleyRequest != null) {
+                volleyRequest.cancel();
+                volleyRequest = null;
+            }
+            volleyRequest = newVolleyRequest;
+            MySingleton.getInstance(context).addToRequestQueue(newVolleyRequest);
+        }
     }
 }
