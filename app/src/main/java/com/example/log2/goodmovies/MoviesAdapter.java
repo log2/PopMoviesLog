@@ -86,9 +86,13 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                 @Override
                 public void onResponse(JSONObject pageContent) {
                     try {
+                        // w185 -> 185x277
+                        // w342 -> 342x513
+                        int expectedWidth = 342;
+                        int expectedHeight = 513;
                         JSONObject item = pageContent.getJSONArray("results").getJSONObject(subPosition);
-                        addGlideRequest(Glide.with(context).load("http://image.tmdb.org/t/p/w185" +
-                                item.getString("poster_path")).override(185, 277).placeholder(R.mipmap.ic_launcher)
+                        addGlideRequest(Glide.with(context).load("http://image.tmdb.org/t/p/w" + expectedWidth +
+                                item.getString("poster_path")).override(expectedWidth, expectedHeight).placeholder(R.mipmap.ic_launcher)
                                 .into(movieView).getRequest());
                     } catch (JSONException e) {
                         throw new RuntimeException("Malformed JSON Object on page " + page, e);
