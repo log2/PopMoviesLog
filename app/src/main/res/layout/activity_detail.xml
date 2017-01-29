@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/darker_gray"
-
+    android:background="@color/colorElegant"
     tools:context=".DetailActivity">
 
     <ScrollView
@@ -20,28 +19,17 @@
 
             <TextView
                 android:id="@+id/tv_title"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:padding="8sp"
                 android:text="title"
-                android:textSize="22sp"
                 android:textColor="@android:color/background_light"
+                android:textSize="22sp"
                 app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
                 />
-
-            <RatingBar
-                android:id="@+id/ratingBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:padding="8dp"
-                android:stepSize="0.5"
-                app:layout_constraintLeft_toRightOf="@+id/tv_releasedate"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/iv_poster" />
 
             <TextView
                 android:id="@+id/tv_releasedate"
@@ -50,22 +38,35 @@
                 android:layout_margin="8dp"
                 android:padding="8dp"
                 android:text="releasedate"
-                android:textSize="12sp"
                 android:textColor="@android:color/background_light"
+                android:textSize="12sp"
                 app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/iv_poster" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:padding="0dp"
+                android:stepSize="0.5"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_releasedate" />
+
 
             <ImageView
                 android:id="@+id/iv_poster"
                 android:layout_width="240dp"
                 android:layout_height="300dp"
                 android:layout_margin="8dp"
+                android:layout_marginTop="8dp"
                 android:padding="8dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_title"
-                app:srcCompat="@android:drawable/toast_frame"
-                android:layout_marginTop="8dp" />
+                app:srcCompat="@android:drawable/toast_frame" />
 
             <TextView
                 android:id="@+id/tv_synopsis"
@@ -74,8 +75,8 @@
                 android:layout_margin="8dp"
                 android:padding="8dp"
                 android:text="synopsis"
-                android:textSize="16sp"
                 android:textColor="@android:color/background_light"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"

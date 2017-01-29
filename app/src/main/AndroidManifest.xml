@@ -23,14 +23,13 @@
         </activity>
 
         <meta-data
-            android:name="com.example.log2.popmovies.MyVolleyGlideModule"
+            android:name="com.example.log2.popmovies.SharedVolleyQueueGlideModule"
             android:value="GlideModule" />
 
         <activity
             android:name="com.example.log2.popmovies.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName="com.example.log2.popmovies.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:parentActivityName="com.example.log2.popmovies.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.log2.popmovies.MainActivity" />

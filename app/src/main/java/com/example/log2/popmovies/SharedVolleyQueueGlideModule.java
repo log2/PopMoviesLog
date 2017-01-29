@@ -11,7 +11,7 @@ import com.bumptech.glide.module.GlideModule;
 
 import java.io.InputStream;
 
-public class MyVolleyGlideModule implements GlideModule {
+public class SharedVolleyQueueGlideModule implements GlideModule {
     @Override
     public void applyOptions(Context context, GlideBuilder builder) {
         // Do nothing.
@@ -19,7 +19,7 @@ public class MyVolleyGlideModule implements GlideModule {
 
     @Override
     public void registerComponents(Context context, Glide glide) {
-        glide.register(GlideUrl.class, InputStream.class, new VolleyUrlLoader.Factory(MySingleton.getInstance(context).getRequestQueue()));
+        glide.register(GlideUrl.class, InputStream.class, new VolleyUrlLoader.Factory(VolleyHolder.in(context).getRequestQueue()));
         VolleyLog.DEBUG = true;
 
     }

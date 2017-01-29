@@ -23,9 +23,10 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_INDEX)) {
+        if (intent != null && intent.hasExtra(Intent.EXTRA_INDEX) && intent.hasExtra(Intent.EXTRA_TEXT)) {
             final int position = intent.getIntExtra(Intent.EXTRA_INDEX, -1);
-            onMovie(position, new Response.Listener<JSONObject>() {
+            ListType listType = ListType.valueOf(intent.getStringExtra(Intent.EXTRA_TEXT));
+            onMovie(listType, position, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject movieContent) {
                     try {
@@ -52,12 +53,12 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private void onMovie(final int position, final Response.Listener<JSONObject> listener) {
+    private void onMovie(ListType listType, final int position, final Response.Listener<JSONObject> listener) {
         final int page = 1 + position / 20;
         final int subPosition = position % 20;
         //Log.v(TAG, "Setting position of " + this + " to " + position + "(" + page + ":" + subPosition);
         //mv_position.setText(page + ":" + subPosition);
-        MySingleton.getInstance(this).addToRequestQueue(reqHigh(theMovieDB("/movie/popular", new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
+        VolleyHolder.in(this).add(reqHigh(theMovieDB("/movie/" + listType.getUrlFragment(), new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject pageContent) {
                 try {

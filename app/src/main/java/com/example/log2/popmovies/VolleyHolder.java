@@ -9,17 +9,17 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
-public class MySingleton {
-    private static MySingleton mInstance;
-    private static Context mCtx;
-    private RequestQueue mRequestQueue;
-    private ImageLoader mImageLoader;
+public class VolleyHolder {
+    private static VolleyHolder volleyHolder;
+    private static Context context;
+    private RequestQueue requestQueue;
+    private ImageLoader imageLoader;
 
-    private MySingleton(Context context) {
-        mCtx = context;
-        mRequestQueue = getRequestQueue();
+    private VolleyHolder(Context context) {
+        VolleyHolder.context = context;
+        requestQueue = getRequestQueue();
 
-        mImageLoader = new ImageLoader(mRequestQueue,
+        imageLoader = new ImageLoader(requestQueue,
                 new ImageLoader.ImageCache() {
                     private final LruCache<String, Bitmap>
                             cache = new LruCache<>(20);
@@ -37,30 +37,35 @@ public class MySingleton {
 
 
 // Start the queue
-        mRequestQueue.start();
+        requestQueue.start();
     }
 
-    public static synchronized MySingleton getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new MySingleton(context);
+    public static synchronized VolleyHolder in(Context context) {
+        if (volleyHolder == null) {
+            volleyHolder = new VolleyHolder(context);
         }
-        return mInstance;
+        return volleyHolder;
     }
 
     public RequestQueue getRequestQueue() {
-        if (mRequestQueue == null) {
+        if (requestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
-            mRequestQueue = Volley.newRequestQueue(mCtx.getApplicationContext());
+            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
         }
-        return mRequestQueue;
+        return requestQueue;
     }
 
-    public <T> void addToRequestQueue(Request<T> req) {
-        getRequestQueue().add(req);
+    public <T> void add(Request<T> request) {
+        request.setTag(context);
+        getRequestQueue().add(request);
+    }
+
+    public void cancelAll() {
+        requestQueue.cancelAll(context);
     }
 
     public ImageLoader getImageLoader() {
-        return mImageLoader;
+        return imageLoader;
     }
 }

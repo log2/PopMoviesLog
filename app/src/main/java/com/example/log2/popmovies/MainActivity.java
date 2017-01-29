@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +22,7 @@ import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     GridLayoutManager layoutManager;
+    ListType listType = ListType.POPULAR;
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -50,23 +52,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setClipToPadding(true);
         recyclerView.setClipChildren(true);
+        recyclerView.setItemViewCacheSize(100);
 
+        initializeAdapter();
         final Context context = this;
-        MySingleton.getInstance(this).addToRequestQueue(reqHigh(theMovieDB("/movie/popular"), new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject jsonObject) {
-                recyclerView.setAdapter(new MoviesAdapter(jsonObject, new MoviesAdapter.MovieClickListener() {
-
-                    @Override
-                    public void clickMovie(int movieId) {
-                        Intent intent = new Intent(context, DetailActivity.class);
-                        intent.putExtra(Intent.EXTRA_INDEX, movieId);
-                        startActivity(intent);
-
-                    }
-                }));
-            }
-        }));
         // TODO change orientation when device orientation changes
 //        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
 //        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
@@ -76,10 +65,31 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @NonNull
+    private Context initializeAdapter() {
+        final Context context = this;
+        VolleyHolder.in(this).add(reqHigh(theMovieDB("/movie/" + listType.getUrlFragment()), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject jsonObject) {
+                recyclerView.setAdapter(new MoviesAdapter(listType, jsonObject, new MoviesAdapter.MovieClickListener() {
+
+                    @Override
+                    public void clickMovie(int movieId) {
+                        Intent intent = new Intent(context, DetailActivity.class);
+                        intent.putExtra(Intent.EXTRA_INDEX, movieId);
+                        intent.putExtra(Intent.EXTRA_TEXT, listType.toString());
+                        startActivity(intent);
+                    }
+                }));
+            }
+        }));
+        return context;
+    }
+
 
     @Override
     protected void onStop() {
-        MySingleton.getInstance(this).getRequestQueue().cancelAll(this);
+        VolleyHolder.in(this).cancelAll();
         super.onStop();
     }
 
@@ -98,7 +108,9 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_list) {
+            listType = listType == ListType.POPULAR ? ListType.TOP_RATED : ListType.POPULAR;
+            initializeAdapter();
             return true;
         }
 

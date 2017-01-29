@@ -24,9 +24,11 @@ import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
     private static final String TAG = MoviesAdapter.class.getSimpleName();
     private final int totalResults;
+    private ListType listType;
     private MovieClickListener movieClickListener;
 
-    public MoviesAdapter(JSONObject initialPage, MovieClickListener movieClickListener) {
+    public MoviesAdapter(ListType listType, JSONObject initialPage, MovieClickListener movieClickListener) {
+        this.listType = listType;
         this.movieClickListener = movieClickListener;
         try {
             this.totalResults = initialPage.getInt("total_results");
@@ -82,7 +84,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         }
 
         public void setMovie(final int position) {
-            onMovie(position, new Response.Listener<JSONObject>() {
+            onMovie(listType, position, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject movieContent) {
                     try {
@@ -100,12 +102,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             });
         }
 
-        private void onMovie(final int position, final Response.Listener<JSONObject> listener) {
+        private void onMovie(ListType listType, final int position, final Response.Listener<JSONObject> listener) {
             final int page = 1 + position / 20;
             final int subPosition = position % 20;
             //Log.v(TAG, "Setting position of " + this + " to " + position + "(" + page + ":" + subPosition);
             //mv_position.setText(page + ":" + subPosition);
-            addNewRequest(reqHigh(theMovieDB("/movie/popular", new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
+            addNewRequest(reqHigh(theMovieDB("/movie/" + listType.getUrlFragment(), new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject pageContent) {
                     try {
@@ -132,7 +134,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                 volleyRequest = null;
             }
             volleyRequest = newVolleyRequest;
-            MySingleton.getInstance(context).addToRequestQueue(newVolleyRequest);
+            VolleyHolder.in(context).add(newVolleyRequest);
         }
     }
 }
