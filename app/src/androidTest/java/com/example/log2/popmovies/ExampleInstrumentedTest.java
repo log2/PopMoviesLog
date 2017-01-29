@@ -1,4 +1,4 @@
-package com.example.log2.goodmovies;
+package com.example.log2.popmovies;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.log2.goodmovies", appContext.getPackageName());
+        assertEquals("com.example.log2.popmovies", appContext.getPackageName());
     }
 }

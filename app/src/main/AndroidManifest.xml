@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.log2.goodmovies">
+    package="com.example.log2.popmovies">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,8 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
+            android:name="com.example.log2.popmovies.MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="Popular movies"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,17 +23,17 @@
         </activity>
 
         <meta-data
-            android:name="com.example.log2.goodmovies.MyVolleyGlideModule"
+            android:name="com.example.log2.popmovies.MyVolleyGlideModule"
             android:value="GlideModule" />
 
         <activity
-            android:name=".DetailActivity"
+            android:name="com.example.log2.popmovies.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.example.log2.popmovies.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.log2.goodmovies.MainActivity" />
+                android:value="com.example.log2.popmovies.MainActivity" />
         </activity>
     </application>
 

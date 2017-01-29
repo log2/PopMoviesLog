@@ -1,4 +1,4 @@
-package com.example.log2.goodmovies;
+package com.example.log2.popmovies;
 
 import android.net.Uri;
 import android.util.Log;

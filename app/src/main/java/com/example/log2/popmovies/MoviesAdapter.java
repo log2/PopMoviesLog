@@ -1,4 +1,4 @@
-package com.example.log2.goodmovies;
+package com.example.log2.popmovies;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -15,8 +15,8 @@ import com.bumptech.glide.request.Request;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.log2.goodmovies.NetworkUtils.reqHigh;
-import static com.example.log2.goodmovies.NetworkUtils.theMovieDB;
+import static com.example.log2.popmovies.NetworkUtils.reqHigh;
+import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 
 /**
  * Created by Lorenzo on 21/01/2017.

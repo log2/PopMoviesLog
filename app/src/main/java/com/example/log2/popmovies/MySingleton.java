@@ -1,4 +1,4 @@
-package com.example.log2.goodmovies;
+package com.example.log2.popmovies;
 
 import android.content.Context;
 import android.graphics.Bitmap;

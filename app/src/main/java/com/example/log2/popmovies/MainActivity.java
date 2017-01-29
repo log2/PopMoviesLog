@@ -1,7 +1,8 @@
-package com.example.log2.goodmovies;
+package com.example.log2.popmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,11 +18,26 @@ import com.android.volley.Response;
 
 import org.json.JSONObject;
 
-import static com.example.log2.goodmovies.NetworkUtils.reqHigh;
-import static com.example.log2.goodmovies.NetworkUtils.theMovieDB;
+import static com.example.log2.popmovies.NetworkUtils.reqHigh;
+import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
+    GridLayoutManager layoutManager;
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (layoutManager != null) {
+            // Checks the orientation of the screen
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                layoutManager.setSpanCount(3);
+            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                layoutManager.setSpanCount(2);
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         // TODO change orientation when device orientation changes
 //        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
 //        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
-        GridLayoutManager layoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
+        layoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         layoutManager.setSmoothScrollbarEnabled(true);
         recyclerView.setLayoutManager(layoutManager);
 

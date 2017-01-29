@@ -1,4 +1,4 @@
-package com.example.log2.goodmovies;
+package com.example.log2.popmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,8 +13,8 @@ import com.bumptech.glide.Glide;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.log2.goodmovies.NetworkUtils.reqHigh;
-import static com.example.log2.goodmovies.NetworkUtils.theMovieDB;
+import static com.example.log2.popmovies.NetworkUtils.reqHigh;
+import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 
 public class DetailActivity extends AppCompatActivity {
 
