@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="action_list_type">List</string>
-    <string name="title_activity_detail">DetailActivity</string>
+    <string name="action_list_type">Switch</string>
+    <string name="title_activity_detail">Details</string>
 </resources>

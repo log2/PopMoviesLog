@@ -26,10 +26,20 @@
                 android:text="title"
                 android:textColor="@android:color/background_light"
                 android:textSize="22sp"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/iv_poster"
                 app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/iv_poster"
+                android:layout_width="240dp"
+                android:layout_height="300dp"
+                android:layout_margin="8dp"
+                android:layout_marginTop="8dp"
+                android:padding="8dp"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                />
+                app:srcCompat="@android:drawable/toast_frame" />
 
             <TextView
                 android:id="@+id/tv_releasedate"
@@ -40,9 +50,8 @@
                 android:text="releasedate"
                 android:textColor="@android:color/background_light"
                 android:textSize="12sp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/iv_poster" />
+                app:layout_constraintLeft_toRightOf="@id/iv_poster"
+                app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -51,22 +60,8 @@
                 android:layout_margin="8dp"
                 android:padding="0dp"
                 android:stepSize="0.5"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/iv_poster"
                 app:layout_constraintTop_toBottomOf="@+id/tv_releasedate" />
-
-
-            <ImageView
-                android:id="@+id/iv_poster"
-                android:layout_width="240dp"
-                android:layout_height="300dp"
-                android:layout_margin="8dp"
-                android:layout_marginTop="8dp"
-                android:padding="8dp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_title"
-                app:srcCompat="@android:drawable/toast_frame" />
 
             <TextView
                 android:id="@+id/tv_synopsis"
@@ -77,15 +72,13 @@
                 android:text="synopsis"
                 android:textColor="@android:color/background_light"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/iv_poster"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ratingBar"
                 tools:layout_constraintBottom_creator="1"
                 tools:layout_constraintLeft_creator="1"
-                tools:layout_constraintRight_creator="1"
-                />
+                tools:layout_constraintRight_creator="1" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </FrameLayout>

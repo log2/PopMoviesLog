@@ -28,11 +28,16 @@ public class MainActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
+        deriveLayoutSize(newConfig);
+    }
+
+    private void deriveLayoutSize(Configuration configuration) {
         if (layoutManager != null) {
             // Checks the orientation of the screen
-            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            int orientation = configuration.orientation;
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 layoutManager.setSpanCount(3);
-            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 layoutManager.setSpanCount(2);
             }
         }
@@ -41,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -56,13 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
         initializeAdapter();
         final Context context = this;
-        // TODO change orientation when device orientation changes
-//        StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
-//        layoutManager.setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+
         layoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
+        deriveLayoutSize(getResources().getConfiguration());
         layoutManager.setSmoothScrollbarEnabled(true);
         recyclerView.setLayoutManager(layoutManager);
-
     }
 
     @NonNull
@@ -110,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_list) {
             listType = listType == ListType.POPULAR ? ListType.TOP_RATED : ListType.POPULAR;
+            setTitle(listType == ListType.POPULAR ? "Popular movies" : "Top rated movies");
             initializeAdapter();
             return true;
         }
