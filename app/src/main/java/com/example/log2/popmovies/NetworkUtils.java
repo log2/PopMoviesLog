@@ -13,7 +13,7 @@ import org.json.JSONObject;
  * Created by Lorenzo on 25/01/2017.
  */
 
-public class NetworkUtils {
+class NetworkUtils {
     private static final String THEMOVIEDB_URL = "https://api.themoviedb.org/3";
     private static final String API_KEY = "api_key";
     private static final String TAG = NetworkUtils.class.getSimpleName();
@@ -28,6 +28,15 @@ public class NetworkUtils {
             @Override
             public Priority getPriority() {
                 return Priority.HIGH;
+            }
+        };
+    }
+
+    public static JsonObjectRequest reqLow(String url, Response.Listener<JSONObject> listener) {
+        return new JsonObjectRequest(Request.Method.GET, url, null, listener, null) {
+            @Override
+            public Priority getPriority() {
+                return Priority.LOW;
             }
         };
     }

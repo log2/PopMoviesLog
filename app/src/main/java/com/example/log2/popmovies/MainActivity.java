@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,9 +19,9 @@ import static com.example.log2.popmovies.NetworkUtils.reqHigh;
 import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 
 public class MainActivity extends AppCompatActivity {
-    RecyclerView recyclerView;
-    GridLayoutManager layoutManager;
-    ListType listType = ListType.POPULAR;
+    private RecyclerView recyclerView;
+    private GridLayoutManager layoutManager;
+    private ListType listType = ListType.POPULAR;
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -58,17 +57,16 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setClipChildren(true);
         recyclerView.setItemViewCacheSize(100);
 
-        initializeAdapter();
         final Context context = this;
 
         layoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         deriveLayoutSize(getResources().getConfiguration());
         layoutManager.setSmoothScrollbarEnabled(true);
         recyclerView.setLayoutManager(layoutManager);
+        setListType(ListType.POPULAR);
     }
 
-    @NonNull
-    private Context initializeAdapter() {
+    private void initializeAdapter() {
         final Context context = this;
         VolleyHolder.in(this).add(reqHigh(theMovieDB("/movie/" + listType.getUrlFragment()), new Response.Listener<JSONObject>() {
             @Override
@@ -78,14 +76,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void clickMovie(int movieId) {
                         Intent intent = new Intent(context, DetailActivity.class);
-                        intent.putExtra(Intent.EXTRA_INDEX, movieId);
-                        intent.putExtra(Intent.EXTRA_TEXT, listType.toString());
+                        intent.putExtra(DetailActivity.MOVIE_INDEX, movieId);
+                        intent.putExtra(DetailActivity.MOVIE_LIST_TYPE, listType.toString());
                         startActivity(intent);
                     }
                 }));
             }
         }));
-        return context;
     }
 
 
@@ -111,12 +108,16 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_list) {
-            listType = listType == ListType.POPULAR ? ListType.TOP_RATED : ListType.POPULAR;
-            setTitle(listType == ListType.POPULAR ? "Popular movies" : "Top rated movies");
-            initializeAdapter();
+            setListType(this.listType == ListType.POPULAR ? ListType.TOP_RATED : ListType.POPULAR);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setListType(ListType newListType) {
+        listType = newListType;
+        setTitle(listType == ListType.POPULAR ? getString(R.string.most_popular) : getString(R.string.top_rated));
+        initializeAdapter();
     }
 }

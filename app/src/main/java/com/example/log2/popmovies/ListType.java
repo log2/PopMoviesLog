@@ -6,7 +6,7 @@ package com.example.log2.popmovies;
 public enum ListType {
     POPULAR("popular"), TOP_RATED("top_rated");
 
-    private String urlFragment;
+    private final String urlFragment;
 
     ListType(String urlFragment) {
         this.urlFragment = urlFragment;

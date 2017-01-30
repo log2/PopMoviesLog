@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,15 +18,18 @@ import static com.example.log2.popmovies.NetworkUtils.reqHigh;
 import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 
 public class DetailActivity extends AppCompatActivity {
+    public static final String MOVIE_INDEX = "android.intent.extra.INDEX";
+    public static final String MOVIE_LIST_TYPE = Intent.EXTRA_TEXT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(Intent.EXTRA_INDEX) && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            final int position = intent.getIntExtra(Intent.EXTRA_INDEX, -1);
-            ListType listType = ListType.valueOf(intent.getStringExtra(Intent.EXTRA_TEXT));
+
+        if (intent != null && intent.hasExtra(MOVIE_INDEX) && intent.hasExtra(MOVIE_LIST_TYPE)) {
+            final int position = intent.getIntExtra(MOVIE_INDEX, -1);
+            ListType listType = ListType.valueOf(intent.getStringExtra(MOVIE_LIST_TYPE));
             onMovie(listType, position, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject movieContent) {
@@ -37,13 +41,15 @@ public class DetailActivity extends AppCompatActivity {
                         ImageView iv_poster = (ImageView) findViewById(R.id.iv_poster);
 
                         tv_releasedate.setText(movieContent.getString("release_date"));
-                        tv_synopsis.setText(movieContent.getString("overview") + "\n");
+                        String overview = movieContent.getString("overview");
+                        String overview_with_newline = overview + "\n";
+                        tv_synopsis.setText(overview_with_newline);
                         tv_title.setText(movieContent.getString("title"));
                         double rating = movieContent.getDouble("vote_average");
                         rb.setNumStars(5);
                         rb.setRating((float) ((5 * rating) / 10));
                         Glide.with(DetailActivity.this).load("http://image.tmdb.org/t/p/w" + 342 +
-                                movieContent.getString("poster_path")).override(342, 513).placeholder(R.mipmap.ic_launcher)
+                                movieContent.getString("poster_path")).override(342, 513).priority(Priority.IMMEDIATE)
                                 .into(iv_poster);
                     } catch (JSONException e) {
                         throw new RuntimeException("Malformed JSON Object (item #" + position + ")", e);

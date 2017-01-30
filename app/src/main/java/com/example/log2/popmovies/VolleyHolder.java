@@ -12,8 +12,8 @@ import com.android.volley.toolbox.Volley;
 public class VolleyHolder {
     private static VolleyHolder volleyHolder;
     private static Context context;
+    private final ImageLoader imageLoader;
     private RequestQueue requestQueue;
-    private ImageLoader imageLoader;
 
     private VolleyHolder(Context context) {
         VolleyHolder.context = context;

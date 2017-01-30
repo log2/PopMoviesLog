@@ -10,12 +10,13 @@ import android.widget.ImageView;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.request.Request;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.log2.popmovies.NetworkUtils.reqHigh;
+import static com.example.log2.popmovies.NetworkUtils.reqLow;
 import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 
 /**
@@ -24,8 +25,8 @@ import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
     private static final String TAG = MoviesAdapter.class.getSimpleName();
     private final int totalResults;
-    private ListType listType;
-    private MovieClickListener movieClickListener;
+    private final ListType listType;
+    private final MovieClickListener movieClickListener;
 
     public MoviesAdapter(ListType listType, JSONObject initialPage, MovieClickListener movieClickListener) {
         this.listType = listType;
@@ -64,9 +65,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
     public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         //private final TextView mv_position;
-        ImageView movieView;
+        final ImageView movieView;
+        private final Context context;
         Request glideRequest;
-        private Context context;
         private JsonObjectRequest volleyRequest;
 
         public MoviesViewHolder(View view, Context context) {
@@ -84,6 +85,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         }
 
         public void setMovie(final int position) {
+
             onMovie(listType, position, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject movieContent) {
@@ -93,7 +95,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                         int expectedWidth = 342;
                         int expectedHeight = 513;
                         addGlideRequest(Glide.with(context).load("http://image.tmdb.org/t/p/w" + expectedWidth +
-                                movieContent.getString("poster_path")).override(expectedWidth, expectedHeight).placeholder(R.mipmap.ic_launcher)
+                                movieContent.getString("poster_path")).override(expectedWidth, expectedHeight)
+                                .priority(Priority.IMMEDIATE)
                                 .into(movieView).getRequest());
                     } catch (JSONException e) {
                         throw new RuntimeException("Malformed JSON Object (item #" + position + ")", e);
@@ -107,7 +110,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             final int subPosition = position % 20;
             //Log.v(TAG, "Setting position of " + this + " to " + position + "(" + page + ":" + subPosition);
             //mv_position.setText(page + ":" + subPosition);
-            addNewRequest(reqHigh(theMovieDB("/movie/" + listType.getUrlFragment(), new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
+            addNewRequest(reqLow(theMovieDB("/movie/" + listType.getUrlFragment(), new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject pageContent) {
                     try {
