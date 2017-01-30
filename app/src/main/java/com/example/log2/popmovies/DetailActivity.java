@@ -18,6 +18,8 @@ import com.bumptech.glide.Priority;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.MessageFormat;
+
 import static com.example.log2.popmovies.NetworkUtils.reqHigh;
 import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 
@@ -29,7 +31,7 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (!isOnline()) {
-            Toast.makeText(this, "No Internet, no movie details. Sorry!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.no_internet_no_details, Toast.LENGTH_LONG).show();
             finish();
         } else {
             setContentView(R.layout.activity_detail);
@@ -60,7 +62,7 @@ public class DetailActivity extends AppCompatActivity {
                                     movieContent.getString("poster_path")).override(342, 513).priority(Priority.IMMEDIATE)
                                     .into(iv_poster);
                         } catch (JSONException e) {
-                            throw new RuntimeException("Malformed JSON Object (item #" + position + ")", e);
+                            throw new RuntimeException(MessageFormat.format(getString(R.string.malformed_json_object), position), e);
                         }
                     }
                 });
@@ -80,14 +82,14 @@ public class DetailActivity extends AppCompatActivity {
         final int subPosition = position % 20;
         //Log.v(TAG, "Setting position of " + this + " to " + position + "(" + page + ":" + subPosition);
         //mv_position.setText(page + ":" + subPosition);
-        VolleyHolder.in(this).add(reqHigh(theMovieDB("/movie/" + listType.getUrlFragment(), new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
+        VolleyHolder.in(this).add(reqHigh(theMovieDB(getString(R.string.themoviedb_base_api) + listType.getUrlFragment(), new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject pageContent) {
                 try {
                     JSONObject item = pageContent.getJSONArray("results").getJSONObject(subPosition);
                     listener.onResponse(item);
                 } catch (JSONException e) {
-                    throw new RuntimeException("Malformed JSON Object (item #" + position + ")", e);
+                    throw new RuntimeException(MessageFormat.format(getString(R.string.malformed_json_object), position), e);
                 }
             }
         }));

@@ -17,5 +17,6 @@
         android:layout_height="240dp"
         android:layout_margin="8dp"
         android:background="@android:color/darker_gray"
+        android:contentDescription="@string/movie_poster"
         android:scaleType="fitXY" />
 </LinearLayout>

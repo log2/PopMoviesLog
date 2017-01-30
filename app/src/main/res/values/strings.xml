@@ -5,6 +5,13 @@
     <string name="most_popular">Most Popular</string>
     <string name="top_rated">Top Rated</string>
     <string name="movie_title_placeholder">title</string>
-    <string name="release_date_placeholder">releasedate</string>
+    <string name="release_date_placeholder">release date</string>
     <string name="synopsis_placeholder">synopsis</string>
+    <string name="popular_movies">Popular movies</string>
+    <string name="movie_poster">Movie poster</string>
+    <string name="internet_needed_for_app">Sorry, you NEED Internet for this app</string>
+    <string name="themoviedb_base_api">/movie/</string>
+    <string name="malformed_json_object">Malformed JSON Object (item #{0})</string>
+    <string name="no_internet_no_details">No Internet, no movie details. Sorry!</string>
+    <string name="x1">Malformed JSON Object (item #{0})</string>
 </resources>

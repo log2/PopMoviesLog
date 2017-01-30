@@ -16,6 +16,8 @@ import com.bumptech.glide.request.Request;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.MessageFormat;
+
 import static com.example.log2.popmovies.NetworkUtils.reqLow;
 import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 
@@ -99,7 +101,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                                 .priority(Priority.IMMEDIATE)
                                 .into(movieView).getRequest());
                     } catch (JSONException e) {
-                        throw new RuntimeException("Malformed JSON Object (item #" + position + ")", e);
+                        throw new RuntimeException(MessageFormat.format(context.getString(R.string.malformed_json_object), position), e);
                     }
                 }
             });
@@ -117,7 +119,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                         JSONObject item = pageContent.getJSONArray("results").getJSONObject(subPosition);
                         listener.onResponse(item);
                     } catch (JSONException e) {
-                        throw new RuntimeException("Malformed JSON Object (item #" + position + ")", e);
+                        throw new RuntimeException(MessageFormat.format(context.getString(R.string.malformed_json_object), position), e);
                     }
                 }
             }));

@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if (!isOnline()) {
-            Toast.makeText(this, "Sorry, you NEED Internet for this app", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.internet_needed_for_app, Toast.LENGTH_LONG).show();
             finish();
         } else {
             setContentView(R.layout.activity_main);
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeAdapter() {
         final Context context = this;
-        VolleyHolder.in(this).add(reqHigh(theMovieDB("/movie/" + listType.getUrlFragment()), new Response.Listener<JSONObject>() {
+        VolleyHolder.in(this).add(reqHigh(theMovieDB(getString(R.string.themoviedb_base_api) + listType.getUrlFragment()), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 recyclerView.setAdapter(new MoviesAdapter(listType, jsonObject, new MoviesAdapter.MovieClickListener() {
