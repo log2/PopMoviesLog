@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="action_list_type">Switch</string>
-    <string name="title_activity_detail">Details</string>
+    <string name="action_list_type">Switch list</string>
+    <string name="title_activity_detail">Movie details</string>
     <string name="most_popular">Most Popular</string>
     <string name="top_rated">Top Rated</string>
     <string name="movie_title_placeholder">title</string>

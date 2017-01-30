@@ -1,11 +1,15 @@
 package com.example.log2.popmovies;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.bumptech.glide.Glide;
@@ -24,39 +28,51 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-        Intent intent = getIntent();
+        if (!isOnline()) {
+            Toast.makeText(this, "No Internet, no movie details. Sorry!", Toast.LENGTH_LONG).show();
+            finish();
+        } else {
+            setContentView(R.layout.activity_detail);
+            Intent intent = getIntent();
 
-        if (intent != null && intent.hasExtra(MOVIE_INDEX) && intent.hasExtra(MOVIE_LIST_TYPE)) {
-            final int position = intent.getIntExtra(MOVIE_INDEX, -1);
-            ListType listType = ListType.valueOf(intent.getStringExtra(MOVIE_LIST_TYPE));
-            onMovie(listType, position, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject movieContent) {
-                    try {
-                        TextView tv_releasedate = (TextView) findViewById(R.id.tv_releasedate);
-                        TextView tv_title = (TextView) findViewById(R.id.tv_title);
-                        TextView tv_synopsis = (TextView) findViewById(R.id.tv_synopsis);
-                        RatingBar rb = (RatingBar) findViewById(R.id.ratingBar);
-                        ImageView iv_poster = (ImageView) findViewById(R.id.iv_poster);
+            if (intent != null && intent.hasExtra(MOVIE_INDEX) && intent.hasExtra(MOVIE_LIST_TYPE)) {
+                final int position = intent.getIntExtra(MOVIE_INDEX, -1);
+                ListType listType = ListType.valueOf(intent.getStringExtra(MOVIE_LIST_TYPE));
+                onMovie(listType, position, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject movieContent) {
+                        try {
+                            TextView tv_releasedate = (TextView) findViewById(R.id.tv_releasedate);
+                            TextView tv_title = (TextView) findViewById(R.id.tv_title);
+                            TextView tv_synopsis = (TextView) findViewById(R.id.tv_synopsis);
+                            RatingBar rb = (RatingBar) findViewById(R.id.ratingBar);
+                            ImageView iv_poster = (ImageView) findViewById(R.id.iv_poster);
 
-                        tv_releasedate.setText(movieContent.getString("release_date"));
-                        String overview = movieContent.getString("overview");
-                        String overview_with_newline = overview + "\n";
-                        tv_synopsis.setText(overview_with_newline);
-                        tv_title.setText(movieContent.getString("title"));
-                        double rating = movieContent.getDouble("vote_average");
-                        rb.setNumStars(5);
-                        rb.setRating((float) ((5 * rating) / 10));
-                        Glide.with(DetailActivity.this).load("http://image.tmdb.org/t/p/w" + 342 +
-                                movieContent.getString("poster_path")).override(342, 513).priority(Priority.IMMEDIATE)
-                                .into(iv_poster);
-                    } catch (JSONException e) {
-                        throw new RuntimeException("Malformed JSON Object (item #" + position + ")", e);
+                            tv_releasedate.setText(movieContent.getString("release_date"));
+                            String overview = movieContent.getString("overview");
+                            String overview_with_newline = overview + "\n";
+                            tv_synopsis.setText(overview_with_newline);
+                            tv_title.setText(movieContent.getString("title"));
+                            double rating = movieContent.getDouble("vote_average");
+                            rb.setNumStars(5);
+                            rb.setRating((float) ((5 * rating) / 10));
+                            Glide.with(DetailActivity.this).load("http://image.tmdb.org/t/p/w" + 342 +
+                                    movieContent.getString("poster_path")).override(342, 513).priority(Priority.IMMEDIATE)
+                                    .into(iv_poster);
+                        } catch (JSONException e) {
+                            throw new RuntimeException("Malformed JSON Object (item #" + position + ")", e);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     private void onMovie(ListType listType, final int position, final Response.Listener<JSONObject> listener) {
