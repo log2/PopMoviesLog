@@ -37,7 +37,7 @@ public class DetailActivity extends AppCompatActivity {
                         ImageView iv_poster = (ImageView) findViewById(R.id.iv_poster);
 
                         tv_releasedate.setText(movieContent.getString("release_date"));
-                        tv_synopsis.setText(movieContent.getString("overview"));
+                        tv_synopsis.setText(movieContent.getString("overview") + "\n");
                         tv_title.setText(movieContent.getString("title"));
                         double rating = movieContent.getDouble("vote_average");
                         rb.setNumStars(5);

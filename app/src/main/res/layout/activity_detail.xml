@@ -68,7 +68,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tv_title"
                 app:srcCompat="@android:drawable/toast_frame" />
 
-            <TextView
+            <me.biubiubiu.justifytext.library.JustifyTextView
                 android:id="@+id/tv_synopsis"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
