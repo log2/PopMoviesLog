@@ -112,7 +112,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             final int subPosition = position % 20;
             //Log.v(TAG, "Setting position of " + this + " to " + position + "(" + page + ":" + subPosition);
             //mv_position.setText(page + ":" + subPosition);
-            addNewRequest(reqLow(theMovieDB("/movie/" + listType.getUrlFragment(), new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
+            addNewRequest(reqLow(theMovieDB(context.getString(R.string.themoviedb_base_api) + listType.getUrlFragment(), new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject pageContent) {
                     try {

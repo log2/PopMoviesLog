@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -33,14 +34,31 @@ public class MainActivity extends AppCompatActivity {
         deriveLayoutSize(newConfig);
     }
 
+    private int[] computeMaxDensities() {
+        int densityDpi = getResources().getDisplayMetrics().densityDpi;
+        switch (densityDpi) {
+            case DisplayMetrics.DENSITY_LOW:
+            case DisplayMetrics.DENSITY_MEDIUM:
+                return new int[]{7, 5};
+
+            case DisplayMetrics.DENSITY_HIGH:
+            default:
+                return new int[]{3, 2};
+        }
+    }
     private void deriveLayoutSize(Configuration configuration) {
         if (layoutManager != null) {
             // Checks the orientation of the screen
             int orientation = configuration.orientation;
-            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                layoutManager.setSpanCount(3);
-            } else if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                layoutManager.setSpanCount(2);
+
+            int[] maxDensities = computeMaxDensities();
+            switch (orientation) {
+                case Configuration.ORIENTATION_LANDSCAPE:
+                    layoutManager.setSpanCount(maxDensities[0]);
+                    break;
+                case Configuration.ORIENTATION_PORTRAIT:
+                    layoutManager.setSpanCount(maxDensities[1]);
+                    break;
             }
         }
     }
