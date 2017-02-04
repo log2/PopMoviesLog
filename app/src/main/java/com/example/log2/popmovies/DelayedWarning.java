@@ -17,7 +17,7 @@ public class DelayedWarning {
             public void run() {
                 if (!hidden.get()) delayShowAction.run();
             }
-        }, 100);
+        }, 150);
     }
 
     public void hide(Runnable delayHideAction) {
