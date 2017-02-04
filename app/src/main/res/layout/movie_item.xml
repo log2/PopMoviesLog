@@ -15,8 +15,12 @@
         android:id="@+id/movie_image"
         android:layout_width="160dp"
         android:layout_height="240dp"
-        android:layout_margin="8dp"
+        android:layout_gravity="center_vertical|center_horizontal|center"
+        android:layout_marginBottom="@dimen/vertical_margin"
+        android:layout_marginLeft="@dimen/horizontal_margin"
+        android:layout_marginRight="@dimen/horizontal_margin"
+        android:layout_marginTop="@dimen/vertical_margin"
         android:background="@android:color/darker_gray"
         android:contentDescription="@string/movie_poster"
-        android:scaleType="fitXY" />
+        android:scaleType="centerCrop" />
 </LinearLayout>

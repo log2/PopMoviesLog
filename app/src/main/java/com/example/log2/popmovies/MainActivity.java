@@ -3,6 +3,7 @@ package com.example.log2.popmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private GridLayoutManager layoutManager;
     private ListType listType = ListType.POPULAR;
 
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -34,32 +37,15 @@ public class MainActivity extends AppCompatActivity {
         deriveLayoutSize(newConfig);
     }
 
-    private int[] computeMaxDensities() {
-        int densityDpi = getResources().getDisplayMetrics().densityDpi;
-        switch (densityDpi) {
-            case DisplayMetrics.DENSITY_LOW:
-            case DisplayMetrics.DENSITY_MEDIUM:
-                return new int[]{7, 5};
-
-            case DisplayMetrics.DENSITY_HIGH:
-            default:
-                return new int[]{3, 2};
-        }
-    }
     private void deriveLayoutSize(Configuration configuration) {
         if (layoutManager != null) {
-            // Checks the orientation of the screen
-            int orientation = configuration.orientation;
+            Display display = getWindowManager().getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
 
-            int[] maxDensities = computeMaxDensities();
-            switch (orientation) {
-                case Configuration.ORIENTATION_LANDSCAPE:
-                    layoutManager.setSpanCount(maxDensities[0]);
-                    break;
-                case Configuration.ORIENTATION_PORTRAIT:
-                    layoutManager.setSpanCount(maxDensities[1]);
-                    break;
-            }
+            int availableWidthDp = pixelToDp(size.x);
+            int imageWidthDp = (160 + 4 + 4);
+            layoutManager.setSpanCount(availableWidthDp / imageWidthDp);
         }
     }
 
@@ -67,10 +53,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!isOnline()) {
-            Toast.makeText(this, R.string.internet_needed_for_app, Toast.LENGTH_LONG).show();
-            finish();
-        } else {
+        if (isOnline()) {
             setContentView(R.layout.activity_main);
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
@@ -89,7 +72,26 @@ public class MainActivity extends AppCompatActivity {
             layoutManager.setSmoothScrollbarEnabled(true);
             recyclerView.setLayoutManager(layoutManager);
             setListType(ListType.POPULAR);
+        } else {
+            Toast.makeText(this, R.string.internet_needed_for_app, Toast.LENGTH_LONG).show();
+            finish();
         }
+    }
+
+    private int dpToPixel(int dp) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        Display display = getWindowManager().getDefaultDisplay();
+        display.getMetrics(displayMetrics);
+        float scale = displayMetrics.density;
+        return (int) (dp * scale + 0.5f);
+    }
+
+    private int pixelToDp(int pixel) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        Display display = getWindowManager().getDefaultDisplay();
+        display.getMetrics(displayMetrics);
+        float scale = displayMetrics.density;
+        return (int) (pixel / scale + 0.5f);
     }
 
     private void initializeAdapter() {

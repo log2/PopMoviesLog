@@ -97,7 +97,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                         int expectedWidth = 342;
                         int expectedHeight = 513;
                         addGlideRequest(Glide.with(context).load("http://image.tmdb.org/t/p/w" + expectedWidth +
-                                movieContent.getString("poster_path")).override(expectedWidth, expectedHeight)
+                                movieContent.getString("poster_path"))
+                                //.override(expectedWidth, expectedHeight)
                                 .priority(Priority.IMMEDIATE)
                                 .into(movieView).getRequest());
                     } catch (JSONException e) {
