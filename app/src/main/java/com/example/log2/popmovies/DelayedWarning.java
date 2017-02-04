@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by gallucci on 04/02/2017.
  */
 
-public class DelayedWarning {
+class DelayedWarning {
     private final AtomicBoolean hidden = new AtomicBoolean(false);
 
     public DelayedWarning(final Runnable delayShowAction) {

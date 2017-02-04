@@ -13,8 +13,7 @@
     <string name="themoviedb_base_api">/movie/</string>
     <string name="malformed_json_object">Malformed JSON Object (item #{0})</string>
     <string name="no_internet_no_details">No Internet, no movie details. Sorry!</string>
-    <string name="x1">Malformed JSON Object (item #{0})</string>
-    <string name="preparingMoviesList">Preparing movies list...</string>
+    <string name="preparingMoviesList">Preparing movies list…</string>
     <string name="top_rated_movies">Show Top Rated first</string>
     <string name="most_popular_movies">Show Most Popular first</string>
     <string name="json_attr_release_date">release_date</string>

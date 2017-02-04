@@ -69,7 +69,7 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isOnline() {
+    private boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
@@ -77,11 +77,6 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void onMovie(ListType listType, final int position, final Response.Listener<JSONObject> listener) {
-        final int page = 1 + position / 20;
-        final int subPosition = position % 20;
-        //Log.v(TAG, "Setting position of " + this + " to " + position + "(" + page + ":" + subPosition);
-        //mv_position.setText(page + ":" + subPosition);
-
         APIHelper APIHelper = new APIHelper(this);
         VolleyHolder.in(this).add(APIHelper.newReq(true, listType, position, listener));
     }

@@ -9,7 +9,6 @@
         android:title="@string/themoviedb"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_list"
         android:icon="@drawable/ic_action_change_list_black"
         android:orderInCategory="101"
         android:title="@string/action_list_type"

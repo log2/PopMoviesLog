@@ -16,10 +16,10 @@ import java.text.MessageFormat;
  * Created by Lorenzo on 25/01/2017.
  */
 
-public class APIHelper {
+class APIHelper {
 
     private static final String TAG = APIHelper.class.getSimpleName();
-    private Context context;
+    private final Context context;
 
     public APIHelper(Context context) {
         this.context = context;
@@ -50,7 +50,7 @@ public class APIHelper {
         }
     }
 
-    public JsonObjectRequest reqLow(String url, Response.Listener<JSONObject> listener) {
+    private JsonObjectRequest reqLow(String url, Response.Listener<JSONObject> listener) {
         return new JsonObjectRequest(Request.Method.GET, url, null, listener, null) {
             @Override
             public Priority getPriority() {
@@ -59,7 +59,7 @@ public class APIHelper {
         };
     }
 
-    public String theMovieDB(String verb, String[]... params) {
+    private String theMovieDB(String verb, String[]... params) {
         String baseURL = context.getString(R.string.themoviedb_api_url_prefix) + verb;
         Uri.Builder builder = Uri.parse(baseURL).buildUpon();
         for (String[] pair : params) {
@@ -95,7 +95,7 @@ public class APIHelper {
         return highPriority ? reqHigh(getPage(listType, page), responseListener) : reqLow(getPage(listType, page), responseListener);
     }
 
-    public String getPage(ListType listType, int page) {
+    private String getPage(ListType listType, int page) {
         return getPage(listType, new String[]{context.getString(R.string.tmdb_page_param), Integer.toString(page)});
     }
 
