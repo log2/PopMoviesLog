@@ -31,4 +31,6 @@
     <string name="json_attr_total_results">total_results</string>
     <string name="themoviedb_api_url_prefix">https://api.themoviedb.org/3</string>
     <string name="tmdb_param_api_key">api_key</string>
+    <string name="courtesy_tmdb">Credits: movie data from The Movie DB</string>
+    <string name="themoviedb">TheMovieDB</string>
 </resources>

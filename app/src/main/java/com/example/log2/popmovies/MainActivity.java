@@ -163,6 +163,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.menuTopRated) {
             setListType(ListType.TOP_RATED);
             return true;
+        } else if (id == R.id.menu_tmdb_credit) {
+            Toast.makeText(this, R.string.courtesy_tmdb, Toast.LENGTH_LONG).show();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
