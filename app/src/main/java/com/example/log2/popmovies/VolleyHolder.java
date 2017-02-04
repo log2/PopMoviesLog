@@ -19,6 +19,7 @@ public class VolleyHolder {
         VolleyHolder.context = context;
         requestQueue = getRequestQueue();
 
+        // NOTE: Not used anymore
         imageLoader = new ImageLoader(requestQueue,
                 new ImageLoader.ImageCache() {
                     private final LruCache<String, Bitmap>

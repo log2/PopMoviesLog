@@ -27,7 +27,7 @@ import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private GridLayoutManager layoutManager;
-    private ListType listType = ListType.POPULAR;
+    private ListType listType = null;
 
 
     @Override
@@ -158,8 +158,11 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_list) {
-            setListType(this.listType == ListType.POPULAR ? ListType.TOP_RATED : ListType.POPULAR);
+        if (id == R.id.menuMostPopular) {
+            setListType(ListType.POPULAR);
+            return true;
+        } else if (id == R.id.menuTopRated) {
+            setListType(ListType.TOP_RATED);
             return true;
         }
 
@@ -167,8 +170,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setListType(ListType newListType) {
-        listType = newListType;
-        setTitle(listType == ListType.POPULAR ? getString(R.string.most_popular) : getString(R.string.top_rated));
-        initializeAdapter();
+        if (newListType != listType) {
+            listType = newListType;
+            setTitle(listType == ListType.POPULAR ? getString(R.string.most_popular) : getString(R.string.top_rated));
+            initializeAdapter();
+        }
     }
 }

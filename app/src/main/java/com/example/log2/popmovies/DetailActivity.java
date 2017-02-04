@@ -52,6 +52,7 @@ public class DetailActivity extends AppCompatActivity {
 
                             tv_releasedate.setText(movieContent.getString("release_date"));
                             String overview = movieContent.getString("overview");
+                            // Newline is needed to avoid awful text justification on last line
                             String overview_with_newline = overview + "\n";
                             tv_synopsis.setText(overview_with_newline);
                             tv_title.setText(movieContent.getString("title"));

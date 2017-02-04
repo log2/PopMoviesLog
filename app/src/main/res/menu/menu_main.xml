@@ -7,5 +7,14 @@
         android:icon="@drawable/ic_action_change_list_black"
         android:orderInCategory="100"
         android:title="@string/action_list_type"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/menuTopRated"
+                android:title="@string/top_rated_movies" />
+            <item
+                android:id="@+id/menuMostPopular"
+                android:title="@string/most_popular_movies" />
+        </menu>
+    </item>
 </menu>
