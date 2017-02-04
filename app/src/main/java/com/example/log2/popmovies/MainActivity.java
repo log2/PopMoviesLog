@@ -34,19 +34,24 @@ public class MainActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        deriveLayoutSize(newConfig);
+        setSpanCount();
     }
 
-    private void deriveLayoutSize(Configuration configuration) {
+    private void setSpanCount() {
         if (layoutManager != null) {
-            Display display = getWindowManager().getDefaultDisplay();
-            Point size = new Point();
-            display.getSize(size);
-
-            int availableWidthDp = pixelToDp(size.x);
-            int imageWidthDp = (160 + 4 + 4);
-            layoutManager.setSpanCount(availableWidthDp / imageWidthDp);
+            layoutManager.setSpanCount(getIdealSpanCount());
         }
+    }
+
+    private int getIdealSpanCount() {
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+
+        int availableWidthDp = pixelToDp(size.x);
+        int horizontal_margin = pixelToDp((int) getResources().getDimension(R.dimen.horizontal_margin));
+        int imageWidthDp = (144 + horizontal_margin * 2);
+        return availableWidthDp / imageWidthDp;
     }
 
     @Override
@@ -67,8 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
             final Context context = this;
 
-            layoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
-            deriveLayoutSize(getResources().getConfiguration());
+            layoutManager = new GridLayoutManager(context, getIdealSpanCount(), GridLayoutManager.VERTICAL, false);
             layoutManager.setSmoothScrollbarEnabled(true);
             recyclerView.setLayoutManager(layoutManager);
             setListType(ListType.POPULAR);
@@ -96,6 +100,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeAdapter() {
         final Context context = this;
+        final Toast wipToast = Toast.makeText(this, R.string.preparingMoviesList, Toast.LENGTH_LONG);
+        final DelayedWarning delayedWarning = new DelayedWarning(new Runnable() {
+            @Override
+            public void run() {
+                wipToast.show();
+            }
+        });
         VolleyHolder.in(this).add(reqHigh(theMovieDB(getString(R.string.themoviedb_base_api) + listType.getUrlFragment()), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
@@ -109,6 +120,12 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 }));
+                delayedWarning.hide(new Runnable() {
+                    @Override
+                    public void run() {
+                        wipToast.cancel();
+                    }
+                });
             }
         }));
     }

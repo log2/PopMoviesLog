@@ -4,6 +4,7 @@
     tools:context="com.example.log2.popmovies.MainActivity">
     <item
         android:id="@+id/action_list"
+        android:icon="@drawable/ic_action_change_list_black"
         android:orderInCategory="100"
         android:title="@string/action_list_type"
         app:showAsAction="ifRoom" />

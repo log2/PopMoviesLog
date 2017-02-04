@@ -6,12 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.Request;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,12 +73,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         //private final TextView mv_position;
         final ImageView movieView;
         private final Context context;
+        private final ProgressBar pbLoading;
         Request glideRequest;
         private JsonObjectRequest volleyRequest;
 
         public MoviesViewHolder(View view, Context context) {
             super(view);
             movieView = (ImageView) view.findViewById(R.id.movie_image);
+            pbLoading = (ProgressBar) view.findViewById(R.id.pb_loading);
             //mv_position = (TextView) view.findViewById(R.id.mv_position);
             this.context = context;
             movieView.setOnClickListener(this);
@@ -96,10 +102,41 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                         // w342 -> 342x513
                         int expectedWidth = 342;
                         int expectedHeight = 513;
+                        final DelayedWarning delayedWarning = new DelayedWarning(new Runnable() {
+                            @Override
+                            public void run() {
+                                pbLoading.setVisibility(View.VISIBLE);
+                            }
+                        });
                         addGlideRequest(Glide.with(context).load("http://image.tmdb.org/t/p/w" + expectedWidth +
                                 movieContent.getString("poster_path"))
                                 //.override(expectedWidth, expectedHeight)
                                 .priority(Priority.IMMEDIATE)
+                                .listener(new RequestListener<String, GlideDrawable>() {
+                                    @Override
+                                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                        hideLoadingIndicator();
+                                        return false;
+                                    }
+
+                                    private void hideLoadingIndicator() {
+                                        delayedWarning.hide(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                pbLoading.setVisibility(View.INVISIBLE);
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                        hideLoadingIndicator();
+                                        return false;
+                                    }
+                                }).error(R.drawable.ic_load_failed)
+                                //.placeholder(android.R.drawable.gallery_thumb)
+                                //.crossFade(android.R.anim.fade_in, 250)
+                                .animate(android.R.anim.fade_in)
                                 .into(movieView).getRequest());
                     } catch (JSONException e) {
                         throw new RuntimeException(MessageFormat.format(context.getString(R.string.malformed_json_object), position), e);
