@@ -20,11 +20,7 @@ import org.json.JSONObject;
 
 import java.text.MessageFormat;
 
-import static com.example.log2.popmovies.NetworkUtils.reqHigh;
-import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
-
 public class DetailActivity extends AppCompatActivity {
-    public static final String MOVIE_INDEX = "android.intent.extra.INDEX";
     public static final String MOVIE_LIST_TYPE = Intent.EXTRA_TEXT;
 
     @Override
@@ -37,8 +33,8 @@ public class DetailActivity extends AppCompatActivity {
             setContentView(R.layout.activity_detail);
             Intent intent = getIntent();
 
-            if (intent != null && intent.hasExtra(MOVIE_INDEX) && intent.hasExtra(MOVIE_LIST_TYPE)) {
-                final int position = intent.getIntExtra(MOVIE_INDEX, -1);
+            if (intent != null && intent.hasExtra(getString(R.string.extra_movie_index)) && intent.hasExtra(MOVIE_LIST_TYPE)) {
+                final int position = intent.getIntExtra(getString(R.string.extra_movie_index), -1);
                 ListType listType = ListType.valueOf(intent.getStringExtra(MOVIE_LIST_TYPE));
                 onMovie(listType, position, new Response.Listener<JSONObject>() {
                     @Override
@@ -50,17 +46,19 @@ public class DetailActivity extends AppCompatActivity {
                             RatingBar rb = (RatingBar) findViewById(R.id.ratingBar);
                             ImageView iv_poster = (ImageView) findViewById(R.id.iv_poster);
 
-                            tv_releasedate.setText(movieContent.getString("release_date"));
-                            String overview = movieContent.getString("overview");
+                            tv_releasedate.setText(movieContent.getString(getString(R.string.json_attr_release_date)));
+                            String overview = movieContent.getString(getString(R.string.json_attr_overview));
                             // Newline is needed to avoid awful text justification on last line
                             String overview_with_newline = overview + "\n";
                             tv_synopsis.setText(overview_with_newline);
-                            tv_title.setText(movieContent.getString("title"));
-                            double rating = movieContent.getDouble("vote_average");
+                            tv_title.setText(movieContent.getString(getString(R.string.json_attr_title)));
+                            double rating = movieContent.getDouble(getString(R.string.json_attr_vote_average));
                             rb.setNumStars(5);
                             rb.setRating((float) ((5 * rating) / 10));
-                            Glide.with(DetailActivity.this).load("http://image.tmdb.org/t/p/w" + 342 +
-                                    movieContent.getString("poster_path")).override(342, 513).priority(Priority.IMMEDIATE)
+                            Glide.with(DetailActivity.this).load(getString(R.string.poster_url_prefix) + 342 +
+                                    movieContent.getString(getString(R.string.json_attr_poster_path)))
+                                    //.override(342, 513)
+                                    .priority(Priority.IMMEDIATE)
                                     .into(iv_poster);
                         } catch (JSONException e) {
                             throw new RuntimeException(MessageFormat.format(getString(R.string.malformed_json_object), position), e);
@@ -83,17 +81,9 @@ public class DetailActivity extends AppCompatActivity {
         final int subPosition = position % 20;
         //Log.v(TAG, "Setting position of " + this + " to " + position + "(" + page + ":" + subPosition);
         //mv_position.setText(page + ":" + subPosition);
-        VolleyHolder.in(this).add(reqHigh(theMovieDB(getString(R.string.themoviedb_base_api) + listType.getUrlFragment(), new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject pageContent) {
-                try {
-                    JSONObject item = pageContent.getJSONArray("results").getJSONObject(subPosition);
-                    listener.onResponse(item);
-                } catch (JSONException e) {
-                    throw new RuntimeException(MessageFormat.format(getString(R.string.malformed_json_object), position), e);
-                }
-            }
-        }));
+
+        APIHelper APIHelper = new APIHelper(this);
+        VolleyHolder.in(this).add(APIHelper.newReq(true, listType, position, listener));
     }
 
 

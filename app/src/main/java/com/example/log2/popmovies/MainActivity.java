@@ -21,9 +21,6 @@ import com.android.volley.Response;
 
 import org.json.JSONObject;
 
-import static com.example.log2.popmovies.NetworkUtils.reqHigh;
-import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
-
 public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private GridLayoutManager layoutManager;
@@ -107,15 +104,16 @@ public class MainActivity extends AppCompatActivity {
                 wipToast.show();
             }
         });
-        VolleyHolder.in(this).add(reqHigh(theMovieDB(getString(R.string.themoviedb_base_api) + listType.getUrlFragment()), new Response.Listener<JSONObject>() {
+        APIHelper APIHelper = new APIHelper(this);
+        VolleyHolder.in(this).add(APIHelper.reqHigh(APIHelper.getPage(listType), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                recyclerView.setAdapter(new MoviesAdapter(listType, jsonObject, new MoviesAdapter.MovieClickListener() {
+                recyclerView.setAdapter(new MoviesAdapter(context, listType, jsonObject, new MoviesAdapter.MovieClickListener() {
 
                     @Override
                     public void clickMovie(int movieId) {
                         Intent intent = new Intent(context, DetailActivity.class);
-                        intent.putExtra(DetailActivity.MOVIE_INDEX, movieId);
+                        intent.putExtra(getString(R.string.extra_movie_index), movieId);
                         intent.putExtra(DetailActivity.MOVIE_LIST_TYPE, listType.toString());
                         startActivity(intent);
                     }
@@ -129,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }));
     }
+
 
     public boolean isOnline() {
         ConnectivityManager cm =

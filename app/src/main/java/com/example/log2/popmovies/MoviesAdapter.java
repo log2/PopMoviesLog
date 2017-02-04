@@ -22,8 +22,6 @@ import org.json.JSONObject;
 
 import java.text.MessageFormat;
 
-import static com.example.log2.popmovies.NetworkUtils.reqLow;
-import static com.example.log2.popmovies.NetworkUtils.theMovieDB;
 
 /**
  * Created by Lorenzo on 21/01/2017.
@@ -34,11 +32,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     private final ListType listType;
     private final MovieClickListener movieClickListener;
 
-    public MoviesAdapter(ListType listType, JSONObject initialPage, MovieClickListener movieClickListener) {
+    public MoviesAdapter(Context context, ListType listType, JSONObject initialPage, MovieClickListener movieClickListener) {
         this.listType = listType;
         this.movieClickListener = movieClickListener;
         try {
-            this.totalResults = initialPage.getInt("total_results");
+            this.totalResults = initialPage.getInt(context.getString(R.string.json_attr_total_results));
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
@@ -74,6 +72,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         final ImageView movieView;
         private final Context context;
         private final ProgressBar pbLoading;
+        private final APIHelper APIHelper;
         Request glideRequest;
         private JsonObjectRequest volleyRequest;
 
@@ -83,6 +82,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             pbLoading = (ProgressBar) view.findViewById(R.id.pb_loading);
             //mv_position = (TextView) view.findViewById(R.id.mv_position);
             this.context = context;
+            APIHelper = new APIHelper(context);
             movieView.setOnClickListener(this);
         }
 
@@ -101,15 +101,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                         // w185 -> 185x277
                         // w342 -> 342x513
                         int expectedWidth = 342;
-                        int expectedHeight = 513;
+                        //int expectedHeight = 513;
                         final DelayedWarning delayedWarning = new DelayedWarning(new Runnable() {
                             @Override
                             public void run() {
                                 pbLoading.setVisibility(View.VISIBLE);
                             }
                         });
-                        addGlideRequest(Glide.with(context).load("http://image.tmdb.org/t/p/w" + expectedWidth +
-                                movieContent.getString("poster_path"))
+                        addGlideRequest(Glide.with(context).load(APIHelper.getPoster(expectedWidth, movieContent.getString(context.getString(R.string.json_attr_poster_path))))
                                 //.override(expectedWidth, expectedHeight)
                                 .priority(Priority.IMMEDIATE)
                                 .listener(new RequestListener<String, GlideDrawable>() {
@@ -146,21 +145,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         }
 
         private void onMovie(ListType listType, final int position, final Response.Listener<JSONObject> listener) {
-            final int page = 1 + position / 20;
-            final int subPosition = position % 20;
-            //Log.v(TAG, "Setting position of " + this + " to " + position + "(" + page + ":" + subPosition);
-            //mv_position.setText(page + ":" + subPosition);
-            addNewRequest(reqLow(theMovieDB(context.getString(R.string.themoviedb_base_api) + listType.getUrlFragment(), new String[]{"page", "" + page}), new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject pageContent) {
-                    try {
-                        JSONObject item = pageContent.getJSONArray("results").getJSONObject(subPosition);
-                        listener.onResponse(item);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(MessageFormat.format(context.getString(R.string.malformed_json_object), position), e);
-                    }
-                }
-            }));
+            addNewRequest(APIHelper.newReq(false, listType, position, listener));
         }
 
         private void addGlideRequest(Request newGlideRequest) {

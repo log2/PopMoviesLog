@@ -17,4 +17,18 @@
     <string name="preparingMoviesList">Preparing movies list...</string>
     <string name="top_rated_movies">Show Top Rated first</string>
     <string name="most_popular_movies">Show Most Popular first</string>
+    <string name="json_attr_release_date">release_date</string>
+    <string name="json_attr_overview">overview</string>
+    <string name="json_attr_title">title</string>
+    <string name="json_attr_vote_average">vote_average</string>
+    <string name="json_attr_poster_path">poster_path</string>
+    <string name="json_attr_results">results</string>
+    <string name="extra_movie_index">android.intent.extra.INDEX</string>
+    <string name="poster_url_prefix">http://image.tmdb.org/t/p/w</string>
+    <string name="tmdb_page_param">page</string>
+    <string name="url_part_most_popular">popular</string>
+    <string name="url_part_top_rated">top_rated</string>
+    <string name="json_attr_total_results">total_results</string>
+    <string name="themoviedb_api_url_prefix">https://api.themoviedb.org/3</string>
+    <string name="tmdb_param_api_key">api_key</string>
 </resources>
