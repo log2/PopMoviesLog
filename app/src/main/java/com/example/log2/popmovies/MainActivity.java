@@ -55,7 +55,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (isOnline()) {
+        if (!isOnline())
+            Toast.makeText(this, R.string.internet_needed_for_app, Toast.LENGTH_LONG).show();
+
             setContentView(R.layout.activity_main);
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
@@ -73,10 +75,6 @@ public class MainActivity extends AppCompatActivity {
             layoutManager.setSmoothScrollbarEnabled(true);
             recyclerView.setLayoutManager(layoutManager);
             setListType(ListType.POPULAR);
-        } else {
-            Toast.makeText(this, R.string.internet_needed_for_app, Toast.LENGTH_LONG).show();
-            finish();
-        }
     }
 
     private int dpToPixel(int dp) {

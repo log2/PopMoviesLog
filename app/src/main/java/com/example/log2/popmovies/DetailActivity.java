@@ -26,11 +26,11 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!isOnline()) {
+        if (!isOnline())
             Toast.makeText(this, R.string.no_internet_no_details, Toast.LENGTH_LONG).show();
-            finish();
-        } else {
-            setContentView(R.layout.activity_detail);
+
+
+        setContentView(R.layout.activity_detail);
             Intent intent = getIntent();
 
             if (intent != null && intent.hasExtra(getString(R.string.extra_movie_index)) && intent.hasExtra(MOVIE_LIST_TYPE)) {
@@ -65,8 +65,8 @@ public class DetailActivity extends AppCompatActivity {
                         }
                     }
                 });
+
             }
-        }
     }
 
     private boolean isOnline() {
