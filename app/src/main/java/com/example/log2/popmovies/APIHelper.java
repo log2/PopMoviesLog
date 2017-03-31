@@ -92,7 +92,13 @@ class APIHelper {
                 }
             }
         };
-        return highPriority ? reqHigh(getPage(listType, page), responseListener) : reqLow(getPage(listType, page), responseListener);
+        String pageUrl = getPage(listType, page);
+        return highPriority ? reqHigh(pageUrl, responseListener) : reqLow(pageUrl, responseListener);
+    }
+
+    public JsonObjectRequest newReqById(boolean highPriority, int movieId, final Response.Listener<JSONObject> listener) {
+        String url = theMovieDB(context.getString(R.string.themoviedb_base_api) + "/movie/" + movieId);
+        return highPriority ? reqHigh(url, listener) : reqLow(url, listener);
     }
 
     private String getPage(ListType listType, int page) {

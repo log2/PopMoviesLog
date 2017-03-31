@@ -3,10 +3,15 @@ package com.example.log2.popmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,10 +23,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.Response;
+import com.example.log2.popmovies.data.FavoriteContract;
 
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int FAVORITE_LOADER = 42;
     private RecyclerView recyclerView;
     private GridLayoutManager layoutManager;
     private ListType listType = null;
@@ -72,6 +79,23 @@ public class MainActivity extends AppCompatActivity {
             layoutManager = new GridLayoutManager(context, getIdealSpanCount(), GridLayoutManager.VERTICAL, false);
             layoutManager.setSmoothScrollbarEnabled(true);
             recyclerView.setLayoutManager(layoutManager);
+
+            getSupportLoaderManager().initLoader(FAVORITE_LOADER, null, new LoaderManager.LoaderCallbacks<Cursor>() {
+                @Override
+                public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                    return null;
+                }
+
+                @Override
+                public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+                }
+
+                @Override
+                public void onLoaderReset(Loader<Cursor> loader) {
+
+                }
+            });
             setListType(ListType.POPULAR);
         } else {
             Toast.makeText(this, R.string.internet_needed_for_app, Toast.LENGTH_LONG).show();
@@ -105,6 +129,68 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         APIHelper APIHelper = new APIHelper(this);
+        if (listType == ListType.FAVORITES) {
+            // Use loader rather than Volley
+            Bundle queryBundle = new Bundle();
+
+            LoaderManager loaderManager = getSupportLoaderManager();
+            Loader<Cursor> loader = loaderManager.getLoader(FAVORITE_LOADER);
+            LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+                @Override
+                public Loader<Cursor> onCreateLoader(int id, final Bundle args) {
+                    // COMPLETED (4) Return a new AsyncTaskLoader<String> as an anonymous inner class with this as the constructor's parameter
+                    return new AsyncTaskLoader<Cursor>(context) {
+                        @Override
+                        protected void onStartLoading() {
+                            if (args == null) {
+                                return;
+                            }
+                            forceLoad();
+                        }
+
+                        @Override
+                        public Cursor loadInBackground() {
+                            Uri uri = FavoriteContract.FavoriteEntry.CONTENT_URI;
+                            uri = uri.buildUpon().build();
+                            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+
+                            return cursor;
+                        }
+                    };
+                }
+
+                @Override
+                public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                    recyclerView.setAdapter(new FavoriteMoviesAdapter(context, listType, data, new FavoriteMoviesAdapter.MovieClickListener() {
+
+                        @Override
+                        public void clickMovie(int movieId) {
+                            Intent intent = new Intent(context, DetailActivity.class);
+                            intent.putExtra(context.getString(R.string.extra_movie_id), movieId);
+                            intent.putExtra(DetailActivity.MOVIE_LIST_TYPE, listType.toString());
+                            startActivity(intent);
+                        }
+                    }));
+                    delayedWarning.hide(new Runnable() {
+                        @Override
+                        public void run() {
+                            wipToast.cancel();
+                        }
+                    });
+                }
+
+                @Override
+                public void onLoaderReset(Loader<Cursor> loader) {
+
+                }
+            };
+
+            if (loader == null) {
+                loaderManager.initLoader(FAVORITE_LOADER, queryBundle, callbacks);
+            } else {
+                loaderManager.restartLoader(FAVORITE_LOADER, queryBundle, callbacks);
+            }
+        } else
         VolleyHolder.in(this).add(APIHelper.reqHigh(APIHelper.getPage(listType), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {

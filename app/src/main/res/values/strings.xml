@@ -23,6 +23,7 @@
     <string name="json_attr_poster_path">poster_path</string>
     <string name="json_attr_results">results</string>
     <string name="extra_movie_index">android.intent.extra.INDEX</string>
+    <string name="extra_movie_id">android.intent.extra.ID</string>
     <string name="poster_url_prefix">http://image.tmdb.org/t/p/w</string>
     <string name="tmdb_page_param">page</string>
     <string name="url_part_most_popular">popular</string>
