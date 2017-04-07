@@ -35,6 +35,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.log2.popmovies.MainActivity" />
         </activity>
+
+        <provider
+            android:name="com.example.log2.popmovies.data.FavoritesContentProvider"
+            android:authorities="com.example.log2.popmovies"
+            android:exported="false" />
     </application>
 
 </manifest>

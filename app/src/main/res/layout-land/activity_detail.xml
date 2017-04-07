@@ -33,12 +33,12 @@
                 android:paddingLeft="@dimen/horizontal_padding"
                 android:paddingRight="@dimen/horizontal_padding"
                 android:paddingTop="@dimen/top_padding"
-                android:text="@string/movie_title_placeholder"
                 android:textColor="@android:color/background_light"
                 android:textSize="32sp"
                 app:layout_constraintLeft_toRightOf="@+id/iv_poster"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/movie_title_placeholder" />
 
             <ImageView
                 android:id="@+id/iv_poster"
@@ -65,11 +65,11 @@
                 android:paddingLeft="@dimen/horizontal_padding"
                 android:paddingRight="@dimen/horizontal_padding"
                 android:paddingTop="@dimen/top_padding"
-                android:text="@string/release_date_placeholder"
                 android:textColor="@android:color/background_light"
                 android:textSize="12sp"
                 app:layout_constraintLeft_toRightOf="@+id/iv_poster"
-                app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_title"
+                tools:text="@string/release_date_placeholder" />
 
             <RatingBar
                 android:id="@+id/ratingBar"
@@ -97,7 +97,6 @@
                 android:paddingLeft="@dimen/horizontal_padding"
                 android:paddingRight="@dimen/horizontal_padding"
                 android:paddingTop="@dimen/top_padding"
-                android:text="@string/synopsis_placeholder"
                 android:textColor="@android:color/background_light"
                 android:textSize="24sp"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -105,7 +104,8 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ratingBar"
                 tools:layout_constraintLeft_creator="1"
-                tools:layout_constraintRight_creator="1" />
+                tools:layout_constraintRight_creator="1"
+                tools:text="@string/synopsis_placeholder" />
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </FrameLayout>
