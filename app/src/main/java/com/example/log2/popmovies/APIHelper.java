@@ -97,7 +97,7 @@ class APIHelper {
     }
 
     public JsonObjectRequest newReqById(boolean highPriority, int movieId, final Response.Listener<JSONObject> listener) {
-        String url = theMovieDB(context.getString(R.string.themoviedb_base_api) + "/movie/" + movieId);
+        String url = theMovieDB(context.getString(R.string.themoviedb_base_api) + movieId);
         return highPriority ? reqHigh(url, listener) : reqLow(url, listener);
     }
 

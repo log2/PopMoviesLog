@@ -20,6 +20,9 @@
             <item
                 android:id="@+id/menuMostPopular"
                 android:title="@string/most_popular_movies" />
+            <item
+                android:id="@+id/menuFavorite"
+                android:title="@string/favorite_movies" />
         </menu>
     </item>
 </menu>

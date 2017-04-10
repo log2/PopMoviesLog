@@ -41,6 +41,11 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
     }
 
     @Override
+    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+    }
+
+    @Override
     public MoviesViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.movie_item;
@@ -148,7 +153,8 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
 
         private int getIdAt(int position) {
             cursor.moveToPosition(position);
-            return cursor.getInt(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_TMDB_ID));
+            int id = cursor.getInt(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_TMDB_ID));
+            return id;
         }
 
         private void addGlideRequest(Request newGlideRequest) {
