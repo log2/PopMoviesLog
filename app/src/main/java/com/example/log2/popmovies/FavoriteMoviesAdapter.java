@@ -105,12 +105,7 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
                         // w342 -> 342x513
                         int expectedWidth = 342;
                         //int expectedHeight = 513;
-                        final DelayedWarning delayedWarning = new DelayedWarning(new Runnable() {
-                            @Override
-                            public void run() {
-                                pbLoading.setVisibility(View.VISIBLE);
-                            }
-                        });
+                        final DelayedWarning delayedWarning = DelayedWarning.showingTemporarily(pbLoading);
                         addGlideRequest(Glide.with(context).load(APIHelper.getPoster(expectedWidth, movieContent.getString(context.getString(R.string.json_attr_poster_path))))
                                 //.override(expectedWidth, expectedHeight)
                                 .priority(Priority.IMMEDIATE)
@@ -122,12 +117,7 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
                                     }
 
                                     private void hideLoadingIndicator() {
-                                        delayedWarning.hide(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                pbLoading.setVisibility(View.INVISIBLE);
-                                            }
-                                        });
+                                        delayedWarning.hide();
                                     }
 
                                     @Override
@@ -146,6 +136,7 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
                 }
             });
         }
+
 
         private void onMovie(ListType listType, final int position, final Response.Listener<JSONObject> listener) {
             addNewRequest(APIHelper.newReqById(false, getIdAt(position), listener));

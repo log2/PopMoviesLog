@@ -102,12 +102,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                         // w342 -> 342x513
                         int expectedWidth = 342;
                         //int expectedHeight = 513;
-                        final DelayedWarning delayedWarning = new DelayedWarning(new Runnable() {
-                            @Override
-                            public void run() {
-                                pbLoading.setVisibility(View.VISIBLE);
-                            }
-                        });
+                        final DelayedWarning delayedWarning = DelayedWarning.showingTemporarily(pbLoading);
                         addGlideRequest(Glide.with(context).load(APIHelper.getPoster(expectedWidth, movieContent.getString(context.getString(R.string.json_attr_poster_path))))
                                 //.override(expectedWidth, expectedHeight)
                                 .priority(Priority.IMMEDIATE)
@@ -119,12 +114,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                                     }
 
                                     private void hideLoadingIndicator() {
-                                        delayedWarning.hide(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                pbLoading.setVisibility(View.INVISIBLE);
-                                            }
-                                        });
+                                        delayedWarning.hide();
                                     }
 
                                     @Override

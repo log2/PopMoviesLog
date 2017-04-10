@@ -1,6 +1,8 @@
 package com.example.log2.popmovies;
 
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.view.View;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -12,16 +14,6 @@ class DelayedWarning {
     private final AtomicBoolean hidden = new AtomicBoolean(false);
     private Runnable delayHideAction;
 
-    public DelayedWarning(final Runnable delayShowAction) {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (!hidden.get()) delayShowAction.run();
-            }
-        }, 150);
-    }
-
-
     public DelayedWarning(final Runnable delayShowAction, Runnable delayHideAction) {
         this.delayHideAction = delayHideAction;
         new Handler().postDelayed(new Runnable() {
@@ -32,16 +24,22 @@ class DelayedWarning {
         }, 150);
     }
 
-    public void hide() {
-        hide(delayHideAction == null ? new Runnable() {
+    @NonNull
+    public static DelayedWarning showingTemporarily(final View view) {
+        return new DelayedWarning(new Runnable() {
             @Override
             public void run() {
-                // Do nothing
+                view.setVisibility(View.VISIBLE);
             }
-        } : delayHideAction);
+        }, new Runnable() {
+            @Override
+            public void run() {
+                view.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 
-    public void hide(Runnable delayHideAction) {
+    public void hide() {
         delayHideAction.run();
         hidden.set(true);
     }

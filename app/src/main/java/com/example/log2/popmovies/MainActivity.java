@@ -160,12 +160,11 @@ public class MainActivity extends AppCompatActivity
             Bundle queryBundle = new Bundle();
             LoaderManager loaderManager = getSupportLoaderManager();
             Loader<Cursor> loader = loaderManager.getLoader(FAVORITE_LOADER);
-            LoaderManager.LoaderCallbacks<Cursor> callbacks = this;
 
             if (loader == null) {
-                loaderManager.initLoader(FAVORITE_LOADER, queryBundle, callbacks);
+                loaderManager.initLoader(FAVORITE_LOADER, queryBundle, this);
             } else {
-                loaderManager.restartLoader(FAVORITE_LOADER, queryBundle, callbacks);
+                loaderManager.restartLoader(FAVORITE_LOADER, queryBundle, this);
             }
         } else {
             createLoadWarning();
