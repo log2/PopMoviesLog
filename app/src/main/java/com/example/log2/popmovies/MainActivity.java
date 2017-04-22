@@ -3,12 +3,14 @@ package com.example.log2.popmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Point;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, final Bundle args) {
-        createLoadWarning();
+        if (args != null) createLoadWarning();
         return new AsyncTaskLoader<Cursor>(this) {
             @Override
             protected void onStartLoading() {
@@ -59,7 +61,20 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+    public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
+        data.registerContentObserver(new ContentObserver(new Handler()) {
+            @Override
+            public void onChange(boolean selfChange) {
+                //data.close();
+                startLoading(new Bundle());
+            }
+        });
+
+        showFavorites(data);
+        if (data != null) hideLoadWarning();
+    }
+
+    private void showFavorites(Cursor data) {
         recyclerView.setAdapter(new FavoriteMoviesAdapter(MainActivity.this, listType, data, new FavoriteMoviesAdapter.MovieClickListener() {
 
             @Override
@@ -70,7 +85,6 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         }));
-        hideLoadWarning();
     }
 
     private void hideLoadWarning() {
@@ -133,7 +147,7 @@ public class MainActivity extends AppCompatActivity
         layoutManager.setSmoothScrollbarEnabled(true);
         recyclerView.setLayoutManager(layoutManager);
 
-        getSupportLoaderManager().initLoader(FAVORITE_LOADER, new Bundle(), this);
+        startLoading(null);
         setListType(getListType(savedInstanceState));
     }
 
@@ -157,16 +171,9 @@ public class MainActivity extends AppCompatActivity
         final Context context = this;
         if (listType == ListType.FAVORITES) {
             // Use loader rather than Volley
-            Bundle queryBundle = new Bundle();
-            LoaderManager loaderManager = getSupportLoaderManager();
-            Loader<Cursor> loader = loaderManager.getLoader(FAVORITE_LOADER);
-
-            if (loader == null) {
-                loaderManager.initLoader(FAVORITE_LOADER, queryBundle, this);
-            } else {
-                loaderManager.restartLoader(FAVORITE_LOADER, queryBundle, this);
-            }
+            startLoading(new Bundle());
         } else {
+            stopLoading();
             createLoadWarning();
             APIHelper APIHelper = new APIHelper(this);
             VolleyHolder.in(this).add(APIHelper.reqHigh(APIHelper.getPage(listType), new Response.Listener<JSONObject>() {
@@ -188,6 +195,16 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void startLoading(Bundle queryBundle) {
+        Loader<Cursor> loader = getSupportLoaderManager().getLoader(FAVORITE_LOADER);
+
+        if (loader == null) {
+            getSupportLoaderManager().initLoader(FAVORITE_LOADER, queryBundle, this);
+        } else {
+            getSupportLoaderManager().restartLoader(FAVORITE_LOADER, queryBundle, this);
+        }
+    }
+
     private void createLoadWarning() {
         final Toast wipToast = Toast.makeText(this, R.string.preparingMoviesList, Toast.LENGTH_LONG);
         loadWarning = new DelayedWarning(new Runnable() {
@@ -203,15 +220,8 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -242,9 +252,36 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        startLoading(null);
+        super.onStart();
+    }
+
+    @Override
+    protected void onRestart() {
+        startLoading(null);
+        super.onRestart();
+    }
+
+    @Override
     protected void onStop() {
         VolleyHolder.in(this).cancelAll();
+        stopLoading();
         super.onStop();
+    }
+
+    private void stopLoading() {
+        getSupportLoaderManager().destroyLoader(FAVORITE_LOADER);
     }
 
     @Override

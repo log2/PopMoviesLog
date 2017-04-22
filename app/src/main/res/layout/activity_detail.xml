@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorElegant"
+    android:background="@color/icons"
     tools:context=".DetailActivity">
 
     <ScrollView
@@ -31,7 +31,7 @@
                 android:paddingLeft="@dimen/horizontal_padding"
                 android:paddingRight="@dimen/horizontal_padding"
                 android:paddingTop="@dimen/top_padding"
-                android:textColor="@android:color/background_light"
+                android:textColor="@color/primary_text"
                 android:textSize="32sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -52,6 +52,7 @@
                 android:paddingRight="@dimen/horizontal_padding"
                 android:paddingTop="@dimen/top_padding"
                 android:text="Fav"
+                android:color="@color/colorPrimaryDark"
                 android:visibility="visible"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -69,7 +70,7 @@
                 android:paddingLeft="@dimen/horizontal_padding"
                 android:paddingRight="@dimen/horizontal_padding"
                 android:paddingTop="@dimen/top_padding"
-                android:textColor="@android:color/background_light"
+                android:textColor="@color/secondary_text"
                 android:textSize="12sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -124,7 +125,7 @@
                 android:paddingLeft="@dimen/horizontal_padding"
                 android:paddingRight="@dimen/horizontal_padding"
                 android:paddingTop="@dimen/top_padding"
-                android:textColor="@android:color/background_light"
+                android:textColor="@color/primary_text"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"

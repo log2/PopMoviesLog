@@ -1,6 +1,7 @@
 package com.example.log2.popmovies;
 
 import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -28,7 +29,7 @@ import java.text.MessageFormat;
 /**
  * Created by Lorenzo on 21/01/2017.
  */
-public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAdapter.MoviesViewHolder> {
+public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAdapter.MoviesViewHolder>  {
     private static final String TAG = FavoriteMoviesAdapter.class.getSimpleName();
     private final ListType listType;
     private final MovieClickListener movieClickListener;

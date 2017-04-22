@@ -99,7 +99,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             @Override
             public Boolean loadInBackground() {
                 Uri uri = FavoriteContract.FavoriteEntry.CONTENT_URI;
-                uri = uri.buildUpon().build();
                 int movieId = args.getInt(MOVIE_ID);
                 Cursor cursor = getContentResolver().query(uri, null, FavoriteContract.FavoriteEntry.COLUMN_TMDB_ID + " = ?", new String[]{"" + movieId}, null);
                 try {
@@ -194,7 +193,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             @Override
             protected Boolean doInBackground(Integer... params) {
                 if (checked) {
-                    getContentResolver().delete(FavoriteContract.FavoriteEntry.CONTENT_URI.buildUpon().appendPath("" + params[0]).build(), null, null);
+                    getContentResolver().delete(FavoriteContract.FavoriteEntry.CONTENT_URI, FavoriteContract.FavoriteEntry.COLUMN_TMDB_ID + " = ?", new String[]{"" + params[0]});
                 } else {
                     ContentValues values = new ContentValues();
                     values.put(FavoriteContract.FavoriteEntry.COLUMN_TMDB_ID, params[0]);
