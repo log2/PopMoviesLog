@@ -1,4 +1,4 @@
-package com.example.log2.popmovies;
+package com.example.log2.popmovies.data;
 
 /**
  * Created by gallucci on 29/01/2017.

@@ -1,4 +1,4 @@
-package com.example.log2.popmovies;
+package com.example.log2.popmovies.helpers;
 
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Created by gallucci on 04/02/2017.
  */
 
-class DelayedWarning {
+public class DelayedWarning {
     private final AtomicBoolean hidden = new AtomicBoolean(false);
     private Runnable delayHideAction;
 

@@ -14,7 +14,7 @@ public class FavoriteDbHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "favorites.db";
 
     // If you change the database schema, you must increment the database version
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     // Constructor
     public FavoriteDbHelper(Context context) {
@@ -24,15 +24,15 @@ public class FavoriteDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
-        // Create a table to hold waitlist data
-        final String SQL_CREATE_WAITLIST_TABLE = "CREATE TABLE " + FavoriteEntry.TABLE_NAME + " (" +
+        // Create a table to hold data
+        final String SQL_CREATE_TABLE = "CREATE TABLE " + FavoriteEntry.TABLE_NAME + " (" +
                 FavoriteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                FavoriteEntry.COLUMN_TMDB_ID + " INT NOT NULL, " +
+                FavoriteEntry.COLUMN_TMDB_ID + " TEXT NOT NULL, " +
                 FavoriteEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 FavoriteEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 "); ";
 
-        sqLiteDatabase.execSQL(SQL_CREATE_WAITLIST_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_TABLE);
     }
 
     @Override

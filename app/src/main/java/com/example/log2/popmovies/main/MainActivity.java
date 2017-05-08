@@ -1,4 +1,4 @@
-package com.example.log2.popmovies;
+package com.example.log2.popmovies.main;
 
 import android.content.Context;
 import android.content.Intent;
@@ -25,16 +25,31 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.android.volley.Response;
+import com.example.log2.popmovies.R;
 import com.example.log2.popmovies.data.FavoriteContract;
+import com.example.log2.popmovies.data.ListType;
+import com.example.log2.popmovies.detail.ActivityDetail;
+import com.example.log2.popmovies.helpers.DelayedWarning;
+import com.example.log2.popmovies.model.Movie;
+import com.example.log2.popmovies.model.MovieCount;
+import com.example.log2.popmovies.network.APIHelper;
+import com.example.log2.popmovies.network.TheMovieDbUtils;
+import com.example.log2.popmovies.network.VolleyHolder;
 
-import org.json.JSONObject;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int FAVORITE_LOADER = 42;
+    private static final String TAG = MainActivity.class.getSimpleName();
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.rv_movies)
+    RecyclerView recyclerView;
     private DelayedWarning loadWarning;
-    private RecyclerView recyclerView;
     private GridLayoutManager layoutManager;
     private ListType listType = null;
 
@@ -78,11 +93,9 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setAdapter(new FavoriteMoviesAdapter(MainActivity.this, listType, data, new FavoriteMoviesAdapter.MovieClickListener() {
 
             @Override
-            public void clickMovie(int movieId) {
-                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                intent.putExtra(getString(R.string.extra_movie_id), movieId);
-                intent.putExtra(DetailActivity.MOVIE_LIST_TYPE, listType.toString());
-                startActivity(intent);
+            public void clickMovie(Movie movie) {
+                openMovieDetail(movie);
+
             }
         }));
     }
@@ -131,11 +144,9 @@ public class MainActivity extends AppCompatActivity
             Toast.makeText(this, R.string.internet_needed_for_app, Toast.LENGTH_LONG).show();
 
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
-
-        recyclerView = (RecyclerView) findViewById(R.id.rv_movies);
         recyclerView.setHasFixedSize(true);
         recyclerView.setClipToPadding(true);
         recyclerView.setClipChildren(true);
@@ -170,29 +181,49 @@ public class MainActivity extends AppCompatActivity
     private void initializeAdapter() {
         final Context context = this;
         if (listType == ListType.FAVORITES) {
-            // Use loader rather than Volley
+            // Use loader rather than Retrofit2
             startLoading(new Bundle());
         } else {
             stopLoading();
             createLoadWarning();
             APIHelper APIHelper = new APIHelper(this);
-            VolleyHolder.in(this).add(APIHelper.reqHigh(APIHelper.getPage(listType), new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject jsonObject) {
-                    recyclerView.setAdapter(new MoviesAdapter(context, listType, jsonObject, new MoviesAdapter.MovieClickListener() {
+            startupAdapter(context);
 
-                        @Override
-                        public void clickMovie(int movieId) {
-                            Intent intent = new Intent(context, DetailActivity.class);
-                            intent.putExtra(getString(R.string.extra_movie_index), movieId);
-                            intent.putExtra(DetailActivity.MOVIE_LIST_TYPE, listType.toString());
-                            startActivity(intent);
-                        }
-                    }));
-                    hideLoadWarning();
-                }
-            }));
         }
+    }
+
+    private void startupAdapter(final Context context) {
+        TheMovieDbUtils.getMoviesCount(listType).enqueue(new Callback<MovieCount>() {
+            @Override
+            public void onResponse(Call<MovieCount> call, retrofit2.Response<MovieCount> response) {
+
+                recyclerView.setAdapter(new MoviesAdapter(context, listType, response.body().count, new MoviesAdapter.MovieClickListener() {
+
+                    @Override
+                    public void clickMovie(Movie movie) {
+                        openMovieDetail(movie);
+                    }
+                }));
+                hideLoadWarning();
+            }
+
+            @Override
+            public void onFailure(Call<MovieCount> call, Throwable t) {
+                alert("Couldn't initialize list");
+                t.printStackTrace();
+            }
+        });
+    }
+
+    private void openMovieDetail(Movie movie) {
+        Intent intent = new Intent(this, ActivityDetail.class);
+        intent.putExtra(getString(R.string.extraMovieContentKey), movie);
+        intent.putExtra(ActivityDetail.MOVIE_LIST_TYPE, listType.toString());
+        startActivity(intent);
+    }
+
+    private void alert(String s) {
+        Toast.makeText(this, s, Toast.LENGTH_LONG).show();
     }
 
     private void startLoading(Bundle queryBundle) {
@@ -219,8 +250,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
-
-
 
 
     @Override

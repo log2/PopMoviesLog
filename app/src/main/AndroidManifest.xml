@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.example.log2.popmovies.MainActivity"
+            android:name="com.example.log2.popmovies.main.MainActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/popular_movies"
             android:theme="@style/AppTheme.NoActionBar">
@@ -24,16 +24,16 @@
         </activity>
 
         <meta-data
-            android:name="com.example.log2.popmovies.SharedVolleyQueueGlideModule"
+            android:name="com.example.log2.popmovies.network.SharedVolleyQueueGlideModule"
             android:value="GlideModule" />
 
         <activity
-            android:name="com.example.log2.popmovies.DetailActivity"
+            android:name="com.example.log2.popmovies.detail.ActivityDetail"
             android:label="@string/title_activity_detail"
-            android:parentActivityName="com.example.log2.popmovies.MainActivity">
+            android:parentActivityName="com.example.log2.popmovies.main.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.log2.popmovies.MainActivity" />
+                android:value="com.example.log2.popmovies.main.MainActivity" />
         </activity>
 
         <provider

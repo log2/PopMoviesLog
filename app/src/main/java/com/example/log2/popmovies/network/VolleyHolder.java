@@ -1,4 +1,4 @@
-package com.example.log2.popmovies;
+package com.example.log2.popmovies.network;
 
 import android.content.Context;
 import android.graphics.Bitmap;
