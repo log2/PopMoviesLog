@@ -39,5 +39,7 @@
     <string name="share_movie_text_with_trailer">Looking at <xliff:g example="Forrest Gump" id="movie">%s</xliff:g> movie (<xliff:g example="https://www.youtube.com/watch?v=Oc_JXiRanlI" id="trailer">%s</xliff:g>). Any  thoughts?</string>
     <string name="share_menu">Share</string>
     <string name="favorite">favorite</string>
+    <string name="removeFromFavorite">Remove from favs</string>
+    <string name="addToFavorite">Add to favs</string>
 
 </resources>

@@ -53,7 +53,7 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
     private static final String TAG = ActivityDetail.class.getSimpleName();
     public static int IS_FAVORITE_LOADER = 43;
     @BindView(R.id.cb_fav)
-    CheckBox checkBox;
+    CheckBox cbFavorite;
     @BindView(R.id.iv_poster)
     ImageView iv_poster;
 
@@ -117,11 +117,18 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public void onLoadFinished(Loader<Boolean> loader, Boolean data) {
-        if (data != null) {
-            if (checkBox != null) {
-                checkBox.setChecked(data);
-                checkBox.setVisibility(View.VISIBLE);
+    public void onLoadFinished(Loader<Boolean> loader, Boolean favoriteCheckBoxValue) {
+        setFavorite(favoriteCheckBoxValue);
+    }
+
+    private void setFavorite(Boolean favoriteCheckBoxValue) {
+        if (favoriteCheckBoxValue != null) {
+            if (cbFavorite != null) {
+                cbFavorite.setChecked(favoriteCheckBoxValue);
+                if (favoriteCheckBoxValue)
+                    cbFavorite.setText(R.string.removeFromFavorite);
+                else cbFavorite.setText(R.string.addToFavorite);
+                cbFavorite.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -191,7 +198,7 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
 
                     final Context context = ActivityDetail.this;
 
-                    GridLayoutManager layoutManager = new GridLayoutManager(context, 10, GridLayoutManager.VERTICAL, false);
+                    GridLayoutManager layoutManager = new GridLayoutManager(context, 1, GridLayoutManager.VERTICAL, false);
                     layoutManager.setSmoothScrollbarEnabled(true);
                     rvReviews.setLayoutManager(layoutManager);
                     rvReviews.setAdapter(reviewsAdapter);
@@ -215,7 +222,7 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
         Bundle checkFavBundle = new Bundle();
         checkFavBundle.putString(MOVIE_ID, movieId);
 
-        checkBox.setVisibility(View.INVISIBLE);
+        cbFavorite.setVisibility(View.INVISIBLE);
 
         LoaderManager loaderManager = getSupportLoaderManager();
         Loader<Cursor> loader = loaderManager.getLoader(IS_FAVORITE_LOADER);
@@ -273,7 +280,7 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
     }
 
     public void favorite(View view) {
-        final boolean checked = !checkBox.isChecked();
+        final boolean checked = !cbFavorite.isChecked();
         new AsyncTask<String, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(String... params) {
@@ -291,12 +298,13 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
             @Override
             protected void onPreExecute() {
                 // FIXME add progress
-                checkBox.setEnabled(false);
+                cbFavorite.setEnabled(false);
             }
 
             @Override
             protected void onPostExecute(Boolean aBoolean) {
-                checkBox.setEnabled(true);
+                cbFavorite.setEnabled(true);
+                setFavorite(aBoolean);
             }
         }.execute(movieId);
     }
