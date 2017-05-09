@@ -117,6 +117,24 @@
                     app:layout_constraintLeft_toRightOf="@+id/iv_poster"
                     app:layout_constraintTop_toBottomOf="@+id/tv_releasedate" />
 
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_trailers"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="@dimen/horizontal_margin"
+                    android:layout_marginLeft="@dimen/horizontal_margin"
+                    android:layout_marginRight="@dimen/horizontal_margin"
+                    android:layout_marginStart="@dimen/horizontal_margin"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:clipChildren="false"
+                    android:clipToPadding="true"
+                    android:paddingLeft="@dimen/horizontal_padding"
+                    android:paddingRight="@dimen/horizontal_padding"
+                    android:paddingTop="@dimen/top_padding"
+                    app:layout_constraintBottom_toTopOf="@+id/tv_synopsis"
+                    app:layout_constraintLeft_toRightOf="@+id/iv_poster"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
                 <me.biubiubiu.justifytext.library.JustifyTextView
                     android:id="@+id/tv_synopsis"
                     android:layout_width="0dp"
@@ -139,6 +157,26 @@
                     tools:layout_constraintLeft_creator="1"
                     tools:layout_constraintRight_creator="1"
                     tools:text="@string/synopsis_placeholder" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_reviews"
+                    android:layout_width="0dp"
+                    android:layout_height="64dp"
+                    android:layout_marginEnd="@dimen/horizontal_margin"
+                    android:layout_marginLeft="@dimen/horizontal_margin"
+                    android:layout_marginRight="@dimen/horizontal_margin"
+                    android:layout_marginStart="@dimen/horizontal_margin"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:clipChildren="false"
+                    android:clipToPadding="true"
+                    android:paddingLeft="@dimen/horizontal_padding"
+                    android:paddingRight="@dimen/horizontal_padding"
+                    android:paddingTop="@dimen/top_padding"
+
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toRightOf="@+id/iv_poster"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_synopsis" />
             </android.support.constraint.ConstraintLayout>
         </ScrollView>
     </FrameLayout>

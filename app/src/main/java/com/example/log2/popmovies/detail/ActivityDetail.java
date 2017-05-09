@@ -150,8 +150,12 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
                     }
                 });
                 List<Trailer> trailers = response.body().trailers;
-                trailersAdapter.setTrailers(trailers == null ? new Trailer[]{} : trailers.toArray(new Trailer[]{}));
-                rvTrailers.setAdapter(trailersAdapter);
+                if (trailers == null || trailers.isEmpty())
+                    rvTrailers.setVisibility(View.GONE);
+                else {
+                    trailersAdapter.setTrailers(trailers.toArray(new Trailer[]{}));
+                    rvTrailers.setAdapter(trailersAdapter);
+                }
             }
 
             @Override
@@ -164,8 +168,12 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
             public void onResponse(Call<ReviewListResponse> call, Response<ReviewListResponse> response) {
                 reviewsAdapter = new ReviewsAdapter();
                 List<Review> reviews = response.body().reviews;
-                reviewsAdapter.setReviews(reviews == null ? new Review[]{} : reviews.toArray(new Review[]{}));
-                rvReviews.setAdapter(reviewsAdapter);
+                if (reviews == null || reviews.isEmpty())
+                    rvReviews.setVisibility(View.GONE);
+                else {
+                    reviewsAdapter.setReviews(reviews.toArray(new Review[]{}));
+                    rvReviews.setAdapter(reviewsAdapter);
+                }
             }
 
             @Override

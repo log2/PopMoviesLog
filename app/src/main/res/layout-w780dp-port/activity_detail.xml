@@ -43,29 +43,31 @@
                     android:text="@{movie.title}"
                     android:textColor="@color/primary_text"
                     android:textSize="56sp"
+                    app:layout_constraintBottom_toTopOf="@id/iv_poster"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="@string/movie_title_placeholder" />
 
-                <CheckBox
-                    android:id="@+id/cb_fav"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
+
+                <ImageView
+                    android:id="@+id/iv_poster"
+                    android:layout_width="500dp"
+                    android:layout_height="750dp"
                     android:layout_marginEnd="@dimen/horizontal_margin"
                     android:layout_marginLeft="@dimen/horizontal_margin"
                     android:layout_marginRight="@dimen/horizontal_margin"
                     android:layout_marginStart="@dimen/horizontal_margin"
                     android:layout_marginTop="@dimen/vertical_margin"
-                    android:onClick="favorite"
+                    android:contentDescription="@string/movie_poster"
                     android:paddingLeft="@dimen/horizontal_padding"
                     android:paddingRight="@dimen/horizontal_padding"
                     android:paddingTop="@dimen/top_padding"
-                    android:text="Fav"
-                    android:visibility="visible"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tv_title" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_title"
+                    app:srcCompat="@android:drawable/toast_frame" />
+
 
                 <TextView
                     android:id="@+id/tv_releasedate"
@@ -83,9 +85,26 @@
                     android:textColor="@color/secondary_text"
                     android:textSize="12sp"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/cb_fav"
                     app:layout_constraintTop_toBottomOf="@+id/iv_poster"
                     tools:text="@string/release_date_placeholder" />
+
+                <CheckBox
+                    android:id="@+id/cb_fav"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="@dimen/horizontal_margin"
+                    android:layout_marginRight="@dimen/horizontal_margin"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:onClick="favorite"
+                    android:paddingLeft="@dimen/horizontal_padding"
+                    android:paddingRight="@dimen/horizontal_padding"
+                    android:paddingTop="@dimen/top_padding"
+                    android:text="Fav"
+                    android:visibility="visible"
+                    app:layout_constraintLeft_toRightOf="parent"
+                    app:layout_constraintRight_toRightOf="@+id/tv_releasedate"
+                    app:layout_constraintTop_toBottomOf="@+id/iv_poster" />
 
                 <RatingBar
                     android:id="@+id/ratingBar"
@@ -104,26 +123,26 @@
                     android:stepSize="0.5"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_releasedate" />
+                    app:layout_constraintTop_toBottomOf="@+id/cb_fav" />
 
-
-                <ImageView
-                    android:id="@+id/iv_poster"
-                    android:layout_width="500dp"
-                    android:layout_height="750dp"
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_trailers"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
                     android:layout_marginEnd="@dimen/horizontal_margin"
                     android:layout_marginLeft="@dimen/horizontal_margin"
                     android:layout_marginRight="@dimen/horizontal_margin"
                     android:layout_marginStart="@dimen/horizontal_margin"
                     android:layout_marginTop="@dimen/vertical_margin"
-                    android:contentDescription="@string/movie_poster"
+                    android:clipChildren="false"
+                    android:clipToPadding="true"
                     android:paddingLeft="@dimen/horizontal_padding"
                     android:paddingRight="@dimen/horizontal_padding"
                     android:paddingTop="@dimen/top_padding"
+                    app:layout_constraintBottom_toTopOf="@+id/tv_synopsis"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/cb_fav"
-                    app:srcCompat="@android:drawable/toast_frame" />
+                    app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
 
                 <me.biubiubiu.justifytext.library.JustifyTextView
                     android:id="@+id/tv_synopsis"
@@ -149,6 +168,26 @@
                     tools:layout_constraintLeft_creator="1"
                     tools:layout_constraintRight_creator="1"
                     tools:text="@string/synopsis_placeholder" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_reviews"
+                    android:layout_width="0dp"
+                    android:layout_height="64dp"
+                    android:layout_marginEnd="@dimen/horizontal_margin"
+                    android:layout_marginLeft="@dimen/horizontal_margin"
+                    android:layout_marginRight="@dimen/horizontal_margin"
+                    android:layout_marginStart="@dimen/horizontal_margin"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:clipChildren="false"
+                    android:clipToPadding="true"
+                    android:paddingLeft="@dimen/horizontal_padding"
+                    android:paddingRight="@dimen/horizontal_padding"
+                    android:paddingTop="@dimen/top_padding"
+
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_synopsis" />
             </android.support.constraint.ConstraintLayout>
         </ScrollView>
     </FrameLayout>
