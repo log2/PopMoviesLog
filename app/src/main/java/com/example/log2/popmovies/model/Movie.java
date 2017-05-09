@@ -3,7 +3,7 @@ package com.example.log2.popmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.example.log2.popmovies.helpers.MyuUtils;
+import com.example.log2.popmovies.helpers.FormattingUtils;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
@@ -62,7 +62,7 @@ public final class Movie implements Parcelable {
     }
 
     public String getReleaseDateHR() {
-        return MyuUtils.formatReleaseDate(releaseDate);
+        return FormattingUtils.formatReleaseDate(releaseDate);
     }
 
 
