@@ -50,6 +50,8 @@ public class TheMovieDbUtils {
 
     private static <E> Call<E> trackCall(final Call<E> call) {
         return new Call<E>() {
+            private Call<E> safeCopy;
+
             @Override
             public Response<E> execute() throws IOException {
                 return call.execute();
@@ -57,39 +59,36 @@ public class TheMovieDbUtils {
 
             @Override
             public void enqueue(final Callback<E> callback) {
-                final Call<E> safeCopy = trackCall(call.clone());
+                safeCopy = trackCall(call.clone());
                 ServiceHolder.doASAP(new Runnable() {
                                          public void run() {
-
                                              call.enqueue(new Callback<E>() {
                                                  @Override
                                                  public void onResponse(Call<E> call, Response<E> response) {
                                                      int code = response.code();
+                                                     Log.v(TAG, "Got response with code " + code + " from call on " + call.request().url());
+                                                     Headers headers = response.headers();
                                                      if (code != 200)
                                                          Log.w(TAG, "HTTP Response Code is " + code);
                                                      if (code == 404) {
                                                          onFailure(call, new IllegalArgumentException("Bad address, 404"));
                                                      } else {
                                                          // See: https://www.themoviedb.org/talk/5317af69c3a3685c4a0003b1
-                                                         Headers headers = response.headers();
+
                                                          String rateLimit = "X-RateLimit-Remaining";
                                                          if (headers.names().contains(rateLimit)) {
                                                              ServiceHolder.setRemainingValue(Integer.valueOf(headers.get(rateLimit)));
                                                          }
-                                                         if (code == 429) {
-                                                             if (headers.names().contains("Retry-After")) {
-                                                                 int retryAfter = Math.max(1, Integer.valueOf(headers.get("Retry-After")));
-                                                                 Log.v(TAG, "Call was rate limited, re-scheduling automatically in " + retryAfter + " s as required");
-                                                                 ServiceHolder.deplete(retryAfter);
-                                                                 safeCopy.enqueue(callback);
-                                                             } else {
-                                                                 Log.v(TAG, "Call was rate limited, re-scheduling automatically in a second");
-                                                                 ServiceHolder.deplete(1);
-                                                                 safeCopy.enqueue(callback);
-                                                             }
-                                                         } else
-                                                             callback.onResponse(call, response);
                                                      }
+                                                     if (code == 429) {
+                                                         int retryAfter = headers.names().contains("Retry-After") ?
+                                                                 Math.max(1, Integer.valueOf(headers.get("Retry-After"))) : 1;
+
+                                                         Log.v(TAG, "Call was rate limited, re-scheduling automatically in " + retryAfter + " s as required");
+                                                         ServiceHolder.deplete(retryAfter);
+                                                         safeCopy.enqueue(callback);
+                                                     } else
+                                                         callback.onResponse(call, response);
                                                  }
 
                                                  @Override
@@ -110,6 +109,8 @@ public class TheMovieDbUtils {
             @Override
             public void cancel() {
                 call.cancel();
+                if (safeCopy != null)
+                    safeCopy.cancel();
             }
 
             @Override
@@ -126,7 +127,9 @@ public class TheMovieDbUtils {
             public Request request() {
                 return call.request();
             }
-        };
+        }
+
+                ;
     }
 
     public static Call<MovieListResponse> getPopularMovies(int page) {
