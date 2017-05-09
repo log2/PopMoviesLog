@@ -4,10 +4,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-/**
- * The model of themoviedb.org's response for the popular movies and the top rated movies
- * queries. For the simplicity it only contains the fields those are interesting for us.
- */
 public final class MovieListResponse {
 
     @SerializedName("results")
