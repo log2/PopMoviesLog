@@ -15,6 +15,7 @@ import android.support.v4.app.ShareCompat;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
@@ -78,15 +79,14 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
 
         Intent intent = getIntent();
 
-        if (intent != null && intent.hasExtra(MOVIE_LIST_TYPE)) {
+        if (intent != null && intent.hasExtra(MOVIE_LIST_TYPE)
+                && intent.hasExtra(getString(R.string.extraMovieContentKey))
+                ) {
             ListType listType = ListType.valueOf(intent.getStringExtra(MOVIE_LIST_TYPE));
-
-            if (intent.hasExtra(getString(R.string.extraMovieContentKey))) {
-                final Movie movie = intent.getParcelableExtra(getString(R.string.extraMovieContentKey));
+            final Movie movie = intent.getParcelableExtra(getString(R.string.extraMovieContentKey));
+            if (movie != null)
                 bindMovie(movie);
-            }
         }
-
     }
 
     @Override
@@ -150,10 +150,22 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
                     }
                 });
                 List<Trailer> trailers = response.body().trailers;
-                if (trailers == null || trailers.isEmpty())
+                if (trailers == null || trailers.isEmpty()) {
                     rvTrailers.setVisibility(View.GONE);
-                else {
+                    Log.v(TAG, "Raw body: " + response.raw().body());
+                } else {
+                    Log.v(TAG, "Got " + trailers.size() + " trailers to display");
                     trailersAdapter.setTrailers(trailers.toArray(new Trailer[]{}));
+                    rvTrailers.setHasFixedSize(true);
+                    rvTrailers.setClipToPadding(true);
+                    rvTrailers.setClipChildren(true);
+                    rvTrailers.setItemViewCacheSize(10);
+
+                    final Context context = ActivityDetail.this;
+
+                    GridLayoutManager layoutManager = new GridLayoutManager(context, 1, GridLayoutManager.HORIZONTAL, false);
+                    layoutManager.setSmoothScrollbarEnabled(true);
+                    rvTrailers.setLayoutManager(layoutManager);
                     rvTrailers.setAdapter(trailersAdapter);
                 }
             }
@@ -172,6 +184,16 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
                     rvReviews.setVisibility(View.GONE);
                 else {
                     reviewsAdapter.setReviews(reviews.toArray(new Review[]{}));
+                    rvReviews.setHasFixedSize(true);
+                    rvReviews.setClipToPadding(true);
+                    rvReviews.setClipChildren(true);
+                    rvReviews.setItemViewCacheSize(10);
+
+                    final Context context = ActivityDetail.this;
+
+                    GridLayoutManager layoutManager = new GridLayoutManager(context, 10, GridLayoutManager.VERTICAL, false);
+                    layoutManager.setSmoothScrollbarEnabled(true);
+                    rvReviews.setLayoutManager(layoutManager);
                     rvReviews.setAdapter(reviewsAdapter);
                 }
             }
@@ -238,8 +260,8 @@ public class ActivityDetail extends AppCompatActivity implements LoaderManager.L
     }
 
     private String createShareMovieIntentText() {
-        final boolean movieHasAtLeastOneTrailer = (0 != trailersAdapter.getItemCount());
-        if (movieHasAtLeastOneTrailer) {
+        final boolean oneOrMoreTrailers = (trailersAdapter.getItemCount() > 0);
+        if (oneOrMoreTrailers) {
             final Trailer[] trailers = trailersAdapter.getTrailers();
             final Trailer firstTrailer = trailers[0];
             final String firstTrailerLink = firstTrailer.getLink();

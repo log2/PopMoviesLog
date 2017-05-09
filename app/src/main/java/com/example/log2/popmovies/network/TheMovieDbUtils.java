@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
 import okhttp3.Headers;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Call;
@@ -66,9 +67,10 @@ public class TheMovieDbUtils {
                                                  @Override
                                                  public void onResponse(Call<E> call, Response<E> response) {
                                                      int code = response.code();
-                                                     Log.v(TAG, "Got response with code " + code + " from call on " + call.request().url());
+                                                     Log.v(TAG, "Got response with code " + code + " from call on " + obfuscateKey(call.request().url()));
+
                                                      Headers headers = response.headers();
-                                                     if (code != 200)
+                                                     if (!response.isSuccessful())
                                                          Log.w(TAG, "HTTP Response Code is " + code);
                                                      if (code == 404) {
                                                          onFailure(call, new IllegalArgumentException("Bad address, 404"));
@@ -132,6 +134,10 @@ public class TheMovieDbUtils {
                 ;
     }
 
+    private static String obfuscateKey(HttpUrl url) {
+        return url.toString().replaceAll("api_key=[0-9a-f]+", "api_key=xxx");
+    }
+
     public static Call<MovieListResponse> getPopularMovies(int page) {
         return trackCall(createService().getPopularMovies(page, getApiKey()));
     }
@@ -184,6 +190,7 @@ public class TheMovieDbUtils {
             final Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(TheMovieDbService.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
+                    .validateEagerly(true)
                     .client(client)
                     .build();
 

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
@@ -21,12 +22,12 @@ import butterknife.ButterKnife;
  */
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.TrailerViewHolder> {
     private final static String LOG_TAG = TrailersAdapter.class.getSimpleName();
-    private Trailer[] mTrailers;
-    private TrailersAdapter.OnClickListener mListener;
+    private Trailer[] trailers;
+    private TrailersAdapter.OnClickListener listener;
 
     public TrailersAdapter(final TrailersAdapter.OnClickListener listener) {
-        mTrailers = null;
-        mListener = listener;
+        trailers = null;
+        this.listener = listener;
     }
 
     @Override
@@ -35,35 +36,31 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
 
         final LayoutInflater inflater = LayoutInflater.from(context);
 
-        final boolean shouldAttachToParentImmediately = false;
-
         final View view = inflater.inflate(R.layout.item_trailer, parent,
-                shouldAttachToParentImmediately);
+                false);
 
-        final TrailerViewHolder viewHolder = new TrailerViewHolder(context, view);
-
-        return viewHolder;
+        return new TrailerViewHolder(context, view);
     }
 
     public Trailer[] getTrailers() {
-        return mTrailers;
+        return trailers;
     }
 
     public void setTrailers(final Trailer[] reviews) {
-        this.mTrailers = reviews;
+        this.trailers = reviews;
         notifyDataSetChanged();
     }
 
     @Override
     public void onBindViewHolder(final TrailerViewHolder holder, final int position) {
-        final Trailer trailer = mTrailers[position];
+        final Trailer trailer = trailers[position];
         holder.bind(trailer);
     }
 
     @Override
     public int getItemCount() {
-        if (null == mTrailers) return 0;
-        return mTrailers.length;
+        if (trailers == null) return 0;
+        return trailers.length;
     }
 
     public interface OnClickListener {
@@ -75,34 +72,40 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
      */
     public class TrailerViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private final Context mContext;
+        private final Context context;
 
         @BindView(R.id.image_trailer_thumbnail)
-        ImageView mTrailerThumbnail;
+        ImageView trailerThumbnail;
+
+        @BindView(R.id.trailer_type)
+        TextView trailerType;
+        @BindView(R.id.trailer_title)
+        TextView trailerTitle;
 
         public TrailerViewHolder(final Context context, final View itemView) {
             super(itemView);
-
-            mContext = context;
+            this.context = context;
             ButterKnife.bind(this, itemView);
-            mTrailerThumbnail.setOnClickListener(this);
+
+            trailerThumbnail.setOnClickListener(this);
         }
 
         public void bind(final Trailer trailer) {
-            final String thumbnailLinkToBind = trailer.getThumbnailLink();
-            Glide.with(mContext).load(thumbnailLinkToBind)
-                    .priority(Priority.IMMEDIATE)
-                    .into(mTrailerThumbnail);
+            trailerTitle.setText(trailer.getName());
+            trailerType.setText(trailer.getType());
+            Glide.with(context).load(trailer.getThumbnailLink())
+                    .priority(Priority.HIGH)
+                    .into(trailerThumbnail);
         }
 
         @Override
         public void onClick(final View view) {
-            if (mTrailers == null) {
+            if (trailers == null) {
                 Log.wtf(LOG_TAG, "OnClick handler call with empty trailers list.");
             } else {
                 final int position = getAdapterPosition();
-                final Trailer trailer = mTrailers[position];
-                mListener.onTrailerItemClick(trailer);
+                final Trailer trailer = trailers[position];
+                listener.onTrailerItemClick(trailer);
             }
         }
     }
