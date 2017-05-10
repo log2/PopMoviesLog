@@ -22,7 +22,6 @@ import com.example.log2.popmovies.data.ListType;
 import com.example.log2.popmovies.helpers.DelayedWarning;
 import com.example.log2.popmovies.model.Movie;
 import com.example.log2.popmovies.network.APIHelper;
-import com.example.log2.popmovies.network.TheMovieDbUtils;
 
 import java.text.MessageFormat;
 
@@ -146,7 +145,7 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
 
 
         private void onMovie(ListType listType, final int position, final Response.Listener<Movie> listener) {
-            Call<Movie> call = TheMovieDbUtils.getMovie(getIdAt(position));
+            Call<Movie> call = APIHelper.getMovie(getIdAt(position));
             call.enqueue(new Callback<Movie>() {
                 @Override
                 public void onResponse(Call<Movie> call, retrofit2.Response<Movie> response) {

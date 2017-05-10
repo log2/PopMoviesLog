@@ -28,12 +28,11 @@ import android.widget.Toast;
 import com.example.log2.popmovies.R;
 import com.example.log2.popmovies.data.FavoriteContract;
 import com.example.log2.popmovies.data.ListType;
-import com.example.log2.popmovies.detail.ActivityDetail;
+import com.example.log2.popmovies.detail.ScrollingActivity;
 import com.example.log2.popmovies.helpers.DelayedWarning;
 import com.example.log2.popmovies.model.Movie;
 import com.example.log2.popmovies.model.MovieCount;
 import com.example.log2.popmovies.network.APIHelper;
-import com.example.log2.popmovies.network.TheMovieDbUtils;
 import com.example.log2.popmovies.network.VolleyHolder;
 
 import butterknife.BindView;
@@ -193,7 +192,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startupAdapter(final Context context) {
-        TheMovieDbUtils.getMoviesCount(listType).enqueue(new Callback<MovieCount>() {
+        APIHelper apiHelper = new APIHelper(this);
+        apiHelper.getMoviesCount(listType).enqueue(new Callback<MovieCount>() {
             @Override
             public void onResponse(Call<MovieCount> call, retrofit2.Response<MovieCount> response) {
 
@@ -216,9 +216,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void openMovieDetail(Movie movie) {
-        Intent intent = new Intent(this, ActivityDetail.class);
+        Intent intent = new Intent(this, ScrollingActivity.class);
         intent.putExtra(getString(R.string.extraMovieContentKey), movie);
-        intent.putExtra(ActivityDetail.MOVIE_LIST_TYPE, listType.toString());
+        intent.putExtra(ScrollingActivity.MOVIE_LIST_TYPE, listType.toString());
         startActivity(intent);
     }
 

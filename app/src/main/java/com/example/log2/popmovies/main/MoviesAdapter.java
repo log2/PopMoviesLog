@@ -22,7 +22,6 @@ import com.example.log2.popmovies.helpers.DelayedWarning;
 import com.example.log2.popmovies.model.Movie;
 import com.example.log2.popmovies.model.MovieListResponse;
 import com.example.log2.popmovies.network.APIHelper;
-import com.example.log2.popmovies.network.TheMovieDbUtils;
 
 import java.util.List;
 
@@ -154,7 +153,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             final int pageLength = 20;
             int initialPage = 1;
             final int page = initialPage + position / pageLength;
-            Call<MovieListResponse> call = TheMovieDbUtils.getMovies(listType, page);
+            Call<MovieListResponse> call = APIHelper.getMovies(listType, page);
             call.enqueue(new Callback<MovieListResponse>() {
                 @Override
                 public void onResponse(Call<MovieListResponse> call, retrofit2.Response<MovieListResponse> response) {

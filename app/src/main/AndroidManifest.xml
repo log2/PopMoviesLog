@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.example.log2.popmovies.main.MainActivity"
+            android:name=".main.MainActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/popular_movies"
             android:theme="@style/AppTheme.NoActionBar">
@@ -27,19 +27,20 @@
             android:name="com.example.log2.popmovies.network.SharedVolleyQueueGlideModule"
             android:value="GlideModule" />
 
+        <provider
+            android:name=".data.FavoritesContentProvider"
+            android:authorities="com.example.log2.popmovies"
+            android:exported="false" />
+
         <activity
-            android:name="com.example.log2.popmovies.detail.ActivityDetail"
-            android:label="@string/title_activity_detail"
-            android:parentActivityName="com.example.log2.popmovies.main.MainActivity">
+            android:name=".detail.ScrollingActivity"
+            android:label="@string/title_activity_scrolling"
+            android:parentActivityName=".main.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.log2.popmovies.main.MainActivity" />
         </activity>
-
-        <provider
-            android:name="com.example.log2.popmovies.data.FavoritesContentProvider"
-            android:authorities="com.example.log2.popmovies"
-            android:exported="false" />
     </application>
 
 </manifest>
