@@ -29,23 +29,6 @@
                 android:weightSum="1">
 
 
-                <RatingBar
-                    android:id="@+id/ratingBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/horizontal_margin"
-                    android:layout_marginLeft="@dimen/horizontal_margin"
-                    android:layout_marginRight="@dimen/horizontal_margin"
-                    android:layout_marginStart="@dimen/horizontal_margin"
-                    android:layout_marginTop="@dimen/vertical_margin"
-                    android:numStars="5"
-                    android:paddingLeft="0dp"
-                    android:paddingRight="0dp"
-                    android:paddingTop="0dp"
-                    android:rating="@{movie.ratingAcross(5)}"
-                    android:stepSize="0.5"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent" />
 
 
                 <me.biubiubiu.justifytext.library.JustifyTextView
@@ -63,11 +46,10 @@
                     android:text="@{movie.getReadableSynopsis()}"
                     android:textColor="@color/primary_text"
                     android:textSize="32sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ratingBar"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:layout_constraintBottom_creator="1"
                     tools:layout_constraintLeft_creator="1"
                     tools:layout_constraintRight_creator="1"
@@ -86,10 +68,10 @@
                     android:paddingLeft="@dimen/horizontal_padding"
                     android:paddingRight="@dimen/horizontal_padding"
                     android:paddingTop="@dimen/top_padding"
-                    app:layout_constraintBottom_toTopOf="@+id/tv_synopsis"
+                    app:layout_constraintBottom_toTopOf="@+id/rv_reviews"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_synopsis" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_reviews"
@@ -108,7 +90,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_synopsis" />
+                    app:layout_constraintTop_toBottomOf="@+id/rv_trailers" />
             </android.support.constraint.ConstraintLayout>
         </ScrollView>
     </FrameLayout>
