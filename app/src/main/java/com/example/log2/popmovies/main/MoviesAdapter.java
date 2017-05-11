@@ -1,6 +1,7 @@
 package com.example.log2.popmovies.main;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +24,8 @@ import com.example.log2.popmovies.model.Movie;
 import com.example.log2.popmovies.model.MovieListResponse;
 import com.example.log2.popmovies.network.APIHelper;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 import butterknife.BindView;
@@ -36,14 +39,18 @@ import retrofit2.Callback;
  */
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
     private static final String TAG = MoviesAdapter.class.getSimpleName();
+    final APIHelper apiHelper;
     private final int totalResults;
+    private final View viewForSnackbar;
     private final ListType listType;
     private final MovieClickListener movieClickListener;
 
-    public MoviesAdapter(Context context, ListType listType, int count, MovieClickListener movieClickListener) {
+    public MoviesAdapter(Context context, View viewForSnackbar, ListType listType, int count, MovieClickListener movieClickListener) {
+        this.viewForSnackbar = viewForSnackbar;
         this.listType = listType;
         this.movieClickListener = movieClickListener;
         this.totalResults = count;
+        apiHelper = new APIHelper(context, viewForSnackbar);
     }
 
     @Override
@@ -72,8 +79,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     }
 
     public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-        final com.example.log2.popmovies.network.APIHelper APIHelper;
         private final Context context;
         //private final TextView mv_position;
         @BindView(R.id.movie_image)
@@ -89,7 +94,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             super(view);
             ButterKnife.bind(this, view);
             this.context = context;
-            APIHelper = new APIHelper(context);
+
             movieView.setOnClickListener(this);
         }
 
@@ -113,7 +118,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                     int expectedWidth = 342;
                     //int expectedHeight = 513;
                     final DelayedWarning delayedWarning = DelayedWarning.showingTemporarily(pbLoading);
-                    addGlideRequest(Glide.with(context).load(APIHelper.getPoster(expectedWidth, movie.posterPath))
+                    Glide.with(context).load(apiHelper.getPosterWide(movie.posterPath))
+                            .priority(Priority.LOW).preload();
+                    addGlideRequest(Glide.with(context).load(apiHelper.getPoster(expectedWidth, movie.posterPath))
                             //.override(expectedWidth, expectedHeight)
                             .priority(Priority.IMMEDIATE)
                             .listener(new RequestListener<String, GlideDrawable>() {
@@ -153,7 +160,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             final int pageLength = 20;
             int initialPage = 1;
             final int page = initialPage + position / pageLength;
-            Call<MovieListResponse> call = APIHelper.getMovies(listType, page);
+            Call<MovieListResponse> call = apiHelper.getMovies(listType, page);
             call.enqueue(new Callback<MovieListResponse>() {
                 @Override
                 public void onResponse(Call<MovieListResponse> call, retrofit2.Response<MovieListResponse> response) {
@@ -174,7 +181,20 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
                 @Override
                 public void onFailure(Call<MovieListResponse> call, Throwable t) {
-                    throw new RuntimeException("Could not get page " + page + ", listType = " + listType, t);
+                    if (call.isCanceled() && (t instanceof IOException && t.getMessage().contains("Canceled"))) {// Just ignore
+                        Log.v(TAG, "Ignoring an already canceled call");
+                    } else {
+                        boolean canRetry = t instanceof SocketTimeoutException;
+                        Log.w(TAG, "Could not get page " + page + ", listType = " + listType + " due to: " + t.getMessage());
+                        if (canRetry) {
+                            Snackbar.make(viewForSnackbar, "Network issues, retrying...", Snackbar.LENGTH_SHORT).show();
+                            Log.v(TAG, "Retrying call...");
+                            onMovie(listType, position, listener);
+                        } else {
+                            Log.wtf(TAG, "Could not retry due to fatal error, app is stuck", t);
+                            Snackbar.make(viewForSnackbar, "Network stuck, could not load", Snackbar.LENGTH_INDEFINITE).show();
+                        }
+                    }
                 }
             });
 

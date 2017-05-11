@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -23,7 +24,6 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.log2.popmovies.R;
 import com.example.log2.popmovies.data.FavoriteContract;
@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     private DelayedWarning loadWarning;
     private GridLayoutManager layoutManager;
     private ListType listType = null;
+    private APIHelper apiHelper;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, final Bundle args) {
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         if (!isOnline())
-            Toast.makeText(this, R.string.internet_needed_for_app, Toast.LENGTH_LONG).show();
+            showSnackbar(R.string.internet_needed_for_app);
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -185,19 +186,17 @@ public class MainActivity extends AppCompatActivity
         } else {
             stopLoading();
             createLoadWarning();
-            APIHelper APIHelper = new APIHelper(this);
             startupAdapter(context);
-
         }
     }
 
     private void startupAdapter(final Context context) {
-        APIHelper apiHelper = new APIHelper(this);
+        apiHelper = new APIHelper(this, recyclerView);
         apiHelper.getMoviesCount(listType).enqueue(new Callback<MovieCount>() {
             @Override
             public void onResponse(Call<MovieCount> call, retrofit2.Response<MovieCount> response) {
 
-                recyclerView.setAdapter(new MoviesAdapter(context, listType, response.body().count, new MoviesAdapter.MovieClickListener() {
+                recyclerView.setAdapter(new MoviesAdapter(context, toolbar, listType, response.body().count, new MoviesAdapter.MovieClickListener() {
 
                     @Override
                     public void clickMovie(Movie movie) {
@@ -223,30 +222,31 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void alert(String s) {
-        Toast.makeText(this, s, Toast.LENGTH_LONG).show();
+        Snackbar.make(recyclerView, s, Snackbar.LENGTH_LONG).show();
     }
 
     private void startLoading(Bundle queryBundle) {
-        Loader<Cursor> loader = getSupportLoaderManager().getLoader(FAVORITE_LOADER);
+        final LoaderManager supportLoaderManager = getSupportLoaderManager();
+        Loader<Cursor> loader = supportLoaderManager.getLoader(FAVORITE_LOADER);
 
         if (loader == null) {
-            getSupportLoaderManager().initLoader(FAVORITE_LOADER, queryBundle, this);
+            supportLoaderManager.initLoader(FAVORITE_LOADER, queryBundle, this);
         } else {
-            getSupportLoaderManager().restartLoader(FAVORITE_LOADER, queryBundle, this);
+            supportLoaderManager.restartLoader(FAVORITE_LOADER, queryBundle, this);
         }
     }
 
     private void createLoadWarning() {
-        final Toast wipToast = Toast.makeText(this, R.string.preparingMoviesList, Toast.LENGTH_LONG);
+        final Snackbar progress = Snackbar.make(recyclerView, R.string.preparingMoviesList, Snackbar.LENGTH_LONG);
         loadWarning = new DelayedWarning(new Runnable() {
             @Override
             public void run() {
-                wipToast.show();
+                progress.show();
             }
         }, new Runnable() {
             @Override
             public void run() {
-                wipToast.cancel();
+                progress.dismiss();
             }
         });
     }
@@ -338,11 +338,16 @@ public class MainActivity extends AppCompatActivity
             setListType(ListType.FAVORITES);
             return true;
         } else if (id == R.id.menu_tmdb_credit) {
-            Toast.makeText(this, R.string.courtesy_tmdb, Toast.LENGTH_LONG).show();
+            int courtesy_tmdb = R.string.courtesy_tmdb;
+            showSnackbar(courtesy_tmdb);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showSnackbar(int resourceId) {
+        Snackbar.make(recyclerView, resourceId, Snackbar.LENGTH_LONG).show();
     }
 
     private void setListType(ListType newListType) {

@@ -46,6 +46,30 @@
                     android:stepSize="0.5"
                     app:layout_constraintTop_toBottomOf="@+id/tv_releasedate" />
 
+                <me.biubiubiu.justifytext.library.JustifyTextView
+                    android:id="@+id/tv_synopsis"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/horizontal_margin"
+                    android:layout_marginLeft="@dimen/horizontal_margin"
+                    android:layout_marginRight="@dimen/horizontal_margin"
+                    android:layout_marginStart="@dimen/horizontal_margin"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:paddingLeft="@dimen/horizontal_padding"
+                    android:paddingRight="@dimen/horizontal_padding"
+                    android:paddingTop="@dimen/top_padding"
+                    android:text="@{movie.getReadableSynopsis()}"
+                    android:textColor="@color/primary_text"
+
+                    android:textSize="@dimen/synopsisTextSize"
+                    app:layout_constraintBottom_toTopOf="@+id/rv_reviews"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/rv_trailers"
+                    tools:layout_constraintLeft_creator="1"
+                    tools:layout_constraintRight_creator="1"
+                    tools:text="@string/synopsis_placeholder" />
+
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_trailers"
                     android:layout_width="0dp"
@@ -62,29 +86,6 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/ratingBar" />
 
-                <me.biubiubiu.justifytext.library.JustifyTextView
-                    android:id="@+id/tv_synopsis"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/horizontal_margin"
-                    android:layout_marginLeft="@dimen/horizontal_margin"
-                    android:layout_marginRight="@dimen/horizontal_margin"
-                    android:layout_marginStart="@dimen/horizontal_margin"
-                    android:layout_marginTop="@dimen/vertical_margin"
-                    android:paddingLeft="@dimen/horizontal_padding"
-                    android:paddingRight="@dimen/horizontal_padding"
-                    android:paddingTop="@dimen/top_padding"
-                    android:text="@{movie.getReadableSynopsis()}"
-                    android:textColor="@color/primary_text"
-
-                    android:textSize="24sp"
-                    app:layout_constraintBottom_toTopOf="@+id/rv_reviews"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rv_trailers"
-                    tools:layout_constraintLeft_creator="1"
-                    tools:layout_constraintRight_creator="1"
-                    tools:text="@string/synopsis_placeholder" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_reviews"

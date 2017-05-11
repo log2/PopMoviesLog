@@ -44,5 +44,6 @@
     <string name="title_activity_scrolling">ScrollingActivity</string>
 
     <string name="action_settings">Settings</string>
+    <string name="callChokingTMDB">TheMovieDB calls are being choked, please wait...</string>
 
 </resources>

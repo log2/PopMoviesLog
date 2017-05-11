@@ -9,4 +9,8 @@
     <dimen name="app_bar_height">460dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="movieNoteSize">16sp</dimen>
+    <dimen name="mainContentPadding">0dp</dimen>
+    <dimen name="mainContentMargin">0dp</dimen>
+    <dimen name="synopsisTextSize">24sp</dimen>
 </resources>

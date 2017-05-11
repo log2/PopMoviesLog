@@ -4,10 +4,12 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 
 import com.example.log2.popmovies.BuildConfig;
 import com.example.log2.popmovies.R;
 import com.example.log2.popmovies.data.ListType;
+import com.example.log2.popmovies.helpers.ChokeTracker;
 import com.example.log2.popmovies.model.Movie;
 import com.example.log2.popmovies.model.MovieCount;
 import com.example.log2.popmovies.model.MovieListResponse;
@@ -37,20 +39,26 @@ public class APIHelper {
     private static final String TAG = APIHelper.class.getSimpleName();
     private static final String POSTER_PATH_BASE_URL = "http://image.tmdb.org/t/p/w185/";
     private final Context context;
+    private View viewforSnackbar;
 
 
-    public APIHelper(Context context) {
+    public APIHelper(Context context, View viewforSnackbar) {
         this.context = context;
+        this.viewforSnackbar = viewforSnackbar;
     }
 
-    public static String getAbsolutePosterPath(final String relativePosterPath) {
+    private static String getAbsolutePosterPath(final String relativePosterPath) {
         final Uri posterUri = Uri.parse(POSTER_PATH_BASE_URL).buildUpon()
                 .appendEncodedPath(relativePosterPath)
                 .build();
         return posterUri.toString();
     }
 
-    private static <E> Call<E> trackCall(final Call<E> call) {
+    private static String obfuscateKey(HttpUrl url) {
+        return url.toString().replaceAll("api_key=[0-9a-f]+", "api_key=xxx");
+    }
+
+    private <E> Call<E> trackCall(final Call<E> call) {
         return new Call<E>() {
             private Call<E> safeCopy;
 
@@ -101,7 +109,7 @@ public class APIHelper {
                                              });
                                          }
                                      }
-                );
+                        , ChokeTracker.showingSnackbar(viewforSnackbar, context.getString(R.string.callChokingTMDB)));
             }
 
             @Override
@@ -131,12 +139,7 @@ public class APIHelper {
                 return call.request();
             }
         }
-
                 ;
-    }
-
-    private static String obfuscateKey(HttpUrl url) {
-        return url.toString().replaceAll("api_key=[0-9a-f]+", "api_key=xxx");
     }
 
     private String getApiKey() {
@@ -188,6 +191,10 @@ public class APIHelper {
                 posterId;
     }
 
+    public String getPosterWide(String posterPath) {
+        return getPoster(780, posterPath);
+    }
+
     static class ServiceHolder {
         private static int lowLimit = 1;
         private static Handler handler = new Handler();
@@ -195,7 +202,7 @@ public class APIHelper {
         static TheMovieDbService service = createServiceOnce();
 
         private static TheMovieDbService createServiceOnce() {
-            int cacheSize = 10 * 1024 * 1024; // 10 MiB
+            int cacheSize = 50 * 1024 * 1024; // 50 MiB
             Cache cache = new Cache(new File("."), cacheSize);
 
             OkHttpClient client = new OkHttpClient.Builder()
@@ -237,7 +244,7 @@ public class APIHelper {
             }
         }
 
-        public static void doASAP(final Runnable runnable) {
+        public static void doASAP(final Runnable runnable, final ChokeTracker chokeTracker) {
             boolean canRun = false;
             int callLimit = 0;
             synchronized (ServiceHolder.class) {
@@ -247,14 +254,17 @@ public class APIHelper {
                 }
                 callLimit = remaining;
             }
-            if (canRun)
+            if (canRun) {
                 runnable.run();
-            else {
+                chokeTracker.hide();
+            } else {
+                chokeTracker.signalChoke();
                 Log.v(TAG, "Delaying call to cope with rate limitations (call limit " + callLimit + ")");
-                withDelay(2, new Runnable() {
+                withDelay(1, new Runnable() {
                     @Override
                     public void run() {
-                        doASAP(runnable);
+                        setRemainingValue(1);
+                        doASAP(runnable, chokeTracker);
                     }
                 });
             }

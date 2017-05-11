@@ -27,7 +27,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
@@ -76,6 +75,7 @@ public class ScrollingActivity extends AppCompatActivity
     private ActivityScrollingBinding binding;
 
     private boolean isFavorite;
+    private APIHelper apiHelper;
 
     @Override
     public Loader<Boolean> onCreateLoader(int id, final Bundle args) {
@@ -232,9 +232,10 @@ public class ScrollingActivity extends AppCompatActivity
                 DataBindingUtil.setContentView(this, R.layout.activity_scrolling);
         ButterKnife.bind(this);
 
+        apiHelper = new APIHelper(this, fab);
         getSupportLoaderManager().initLoader(IS_FAVORITE_LOADER, null, this);
         if (!isOnline())
-            Toast.makeText(this, R.string.no_internet_no_details, Toast.LENGTH_LONG).show();
+            Snackbar.make(fab, R.string.no_internet_no_details, Snackbar.LENGTH_LONG).show();
 
         setSupportActionBar(toolbar);
 
@@ -265,7 +266,6 @@ public class ScrollingActivity extends AppCompatActivity
 
         prepareFav();
 
-        APIHelper apiHelper = new APIHelper(this);
         apiHelper.getTrailersForMovie(movieId).enqueue(new Callback<TrailerListResponse>() {
             @Override
             public void onResponse(Call<TrailerListResponse> call, Response<TrailerListResponse> response) {
@@ -331,9 +331,9 @@ public class ScrollingActivity extends AppCompatActivity
         });
         Log.v(TAG, "Getting poster " + movie.posterPath);
 
-        Glide.with(this).load(getString(R.string.poster_url_prefix) + 780 +
-                movie.posterPath)
+        Glide.with(this).load(apiHelper.getPosterWide(movie.posterPath))
                 .priority(Priority.IMMEDIATE)
+                .animate(android.R.anim.fade_in)
                 .into(posterBackground);
     }
 }

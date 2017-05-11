@@ -79,7 +79,7 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
     public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         //private final TextView mv_position;
         private final Context context;
-        private final com.example.log2.popmovies.network.APIHelper APIHelper;
+        private final com.example.log2.popmovies.network.APIHelper apiHelper;
         @BindView(R.id.movie_image)
         ImageView movieView;
         @BindView(R.id.pb_loading)
@@ -91,7 +91,7 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
             super(view);
             ButterKnife.bind(this, view);
             this.context = context;
-            APIHelper = new APIHelper(context);
+            apiHelper = new APIHelper(context, view);
             movieView.setOnClickListener(this);
         }
 
@@ -114,7 +114,9 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
                     int expectedWidth = 342;
                     //int expectedHeight = 513;
                     final DelayedWarning delayedWarning = DelayedWarning.showingTemporarily(pbLoading);
-                    addGlideRequest(Glide.with(context).load(APIHelper.getPoster(expectedWidth, movieContent.posterPath))
+                    Glide.with(context).load(apiHelper.getPosterWide(movie.posterPath))
+                            .priority(Priority.LOW).preload();
+                    addGlideRequest(Glide.with(context).load(apiHelper.getPoster(expectedWidth, movieContent.posterPath))
                             //.override(expectedWidth, expectedHeight)
                             .priority(Priority.IMMEDIATE)
                             .listener(new RequestListener<String, GlideDrawable>() {
@@ -145,7 +147,7 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
 
 
         private void onMovie(ListType listType, final int position, final Response.Listener<Movie> listener) {
-            Call<Movie> call = APIHelper.getMovie(getIdAt(position));
+            Call<Movie> call = apiHelper.getMovie(getIdAt(position));
             call.enqueue(new Callback<Movie>() {
                 @Override
                 public void onResponse(Call<Movie> call, retrofit2.Response<Movie> response) {
