@@ -69,8 +69,7 @@ public class MainActivity extends AppCompatActivity
             public Cursor loadInBackground() {
                 Uri uri = FavoriteContract.FavoriteEntry.CONTENT_URI;
                 uri = uri.buildUpon().build();
-                Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-                return cursor;
+                return getContentResolver().query(uri, null, null, null, null);
             }
         };
     }
@@ -86,7 +85,7 @@ public class MainActivity extends AppCompatActivity
         });
 
         showFavorites(data);
-        if (data != null) hideLoadWarning();
+        hideLoadWarning();
     }
 
     private void showFavorites(Cursor data) {
@@ -269,8 +268,10 @@ public class MainActivity extends AppCompatActivity
     private ListType getListType(Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.containsKey("listType")) {
             String listTypeName = savedInstanceState.getString("listType");
+            if (listTypeName != null)
             return ListType.valueOf(ListType.class, listTypeName);
-        } else return ListType.POPULAR;
+        }
+        return ListType.POPULAR;
     }
 
     private boolean isOnline() {
@@ -282,11 +283,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onPause() {
+
+        // FIXME anything to pause?
         super.onPause();
     }
 
     @Override
     protected void onResume() {
+
+        // FIXME anything to resume?
         super.onResume();
     }
 

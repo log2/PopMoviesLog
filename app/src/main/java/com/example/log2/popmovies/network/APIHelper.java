@@ -1,7 +1,6 @@
 package com.example.log2.popmovies.network;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -39,19 +38,12 @@ public class APIHelper {
     private static final String TAG = APIHelper.class.getSimpleName();
     private static final String POSTER_PATH_BASE_URL = "http://image.tmdb.org/t/p/w185/";
     private final Context context;
-    private View viewforSnackbar;
+    private final View viewforSnackbar;
 
 
     public APIHelper(Context context, View viewforSnackbar) {
         this.context = context;
         this.viewforSnackbar = viewforSnackbar;
-    }
-
-    private static String getAbsolutePosterPath(final String relativePosterPath) {
-        final Uri posterUri = Uri.parse(POSTER_PATH_BASE_URL).buildUpon()
-                .appendEncodedPath(relativePosterPath)
-                .build();
-        return posterUri.toString();
     }
 
     private static String obfuscateKey(HttpUrl url) {
@@ -129,8 +121,10 @@ public class APIHelper {
                 return call.isCanceled();
             }
 
+            @SuppressWarnings("CloneDoesntCallSuperClone")
             @Override
             public Call<E> clone() {
+                // Intentionally wrapped clone
                 return trackCall(call.clone());
             }
 
@@ -142,7 +136,9 @@ public class APIHelper {
                 ;
     }
 
+    @SuppressWarnings("SameReturnValue")
     private String getApiKey() {
+        // We only use one TMDB key
         return BuildConfig.THEMOVIEDB_KEY;
     }
 
@@ -196,10 +192,10 @@ public class APIHelper {
     }
 
     static class ServiceHolder {
-        private static int lowLimit = 1;
-        private static Handler handler = new Handler();
+        private static final int lowLimit = 1;
+        private static final Handler handler = new Handler();
         private static int remaining;
-        static TheMovieDbService service = createServiceOnce();
+        static final TheMovieDbService service = createServiceOnce();
 
         private static TheMovieDbService createServiceOnce() {
             int cacheSize = 50 * 1024 * 1024; // 50 MiB

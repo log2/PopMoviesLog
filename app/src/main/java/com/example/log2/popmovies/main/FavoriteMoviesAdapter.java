@@ -38,7 +38,7 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
     private static final String TAG = FavoriteMoviesAdapter.class.getSimpleName();
     private final ListType listType;
     private final MovieClickListener movieClickListener;
-    private Cursor cursor;
+    private final Cursor cursor;
 
     public FavoriteMoviesAdapter(Context context, ListType listType, Cursor cursor, MovieClickListener movieClickListener) {
         this.listType = listType;
@@ -56,9 +56,8 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
         Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.movie_item;
         LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmediately = false;
 
-        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+        View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
         return new MoviesViewHolder(view, context);
     }
 
@@ -97,7 +96,6 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
 
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
             movieClickListener.clickMovie(movie);
         }
 
@@ -167,8 +165,7 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
 
         private String getIdAt(int position) {
             cursor.moveToPosition(position);
-            String id = cursor.getString(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_TMDB_ID));
-            return id;
+            return cursor.getString(cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_TMDB_ID));
         }
 
         private void addGlideRequest(Request newGlideRequest) {

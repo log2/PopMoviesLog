@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DelayedWarning {
     private final AtomicBoolean hidden = new AtomicBoolean(false);
-    private Runnable delayHideAction;
+    private final Runnable delayHideAction;
 
     public DelayedWarning(final Runnable delayShowAction, Runnable delayHideAction) {
         this.delayHideAction = delayHideAction;

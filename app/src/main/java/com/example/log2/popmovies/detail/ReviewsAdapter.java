@@ -37,9 +37,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
         final View view = inflater.inflate(layoutIdForRecyclerViewItem, parent,
                 shouldAttachToParentImmediately);
 
-        final ReviewViewHolder viewHolder = new ReviewViewHolder(view);
-
-        return viewHolder;
+        return new ReviewViewHolder(view);
     }
 
     public Review[] getReviews() {

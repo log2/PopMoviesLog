@@ -1,5 +1,6 @@
 package com.example.log2.popmovies.helpers;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -8,7 +9,7 @@ import java.util.Date;
  */
 
 public class FormattingUtils {
-    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("dd MMM yyyy");
+    private static final DateFormat DATE_FORMATTER = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM);
 
     public static String formatReleaseDate(final Date date) {
         return DATE_FORMATTER.format(date);

@@ -22,8 +22,8 @@ import butterknife.ButterKnife;
  */
 public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.TrailerViewHolder> {
     private final static String LOG_TAG = TrailersAdapter.class.getSimpleName();
+    private final TrailersAdapter.OnClickListener listener;
     private Trailer[] trailers;
-    private TrailersAdapter.OnClickListener listener;
 
     public TrailersAdapter(final TrailersAdapter.OnClickListener listener) {
         trailers = null;

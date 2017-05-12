@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ChokeTracker {
     private final AtomicBoolean hidden = new AtomicBoolean(false);
     private final Runnable delayShowAction;
-    private Runnable delayHideAction;
+    private final Runnable delayHideAction;
 
     public ChokeTracker(final Runnable delayShowAction, Runnable delayHideAction) {
         this.delayHideAction = delayHideAction;

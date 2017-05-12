@@ -32,7 +32,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.example.log2.popmovies.R;
 import com.example.log2.popmovies.data.FavoriteContract;
-import com.example.log2.popmovies.data.ListType;
 import com.example.log2.popmovies.databinding.ActivityScrollingBinding;
 import com.example.log2.popmovies.model.Movie;
 import com.example.log2.popmovies.model.Review;
@@ -94,8 +93,7 @@ public class ScrollingActivity extends AppCompatActivity
                 String movieId = args.getString(MOVIE_ID);
                 Cursor cursor = getContentResolver().query(uri, null, FavoriteContract.FavoriteEntry.COLUMN_TMDB_ID + " = ?", new String[]{"" + movieId}, null);
                 try {
-                    boolean isNonEmpty = cursor != null && cursor.getCount() > 0;
-                    return isNonEmpty;
+                    return cursor != null && cursor.getCount() > 0;
                 } finally {
                     if (cursor != null)
                         cursor.close();
@@ -251,7 +249,6 @@ public class ScrollingActivity extends AppCompatActivity
         if (intent != null && intent.hasExtra(MOVIE_LIST_TYPE)
                 && intent.hasExtra(getString(R.string.extraMovieContentKey))
                 ) {
-            ListType listType = ListType.valueOf(intent.getStringExtra(MOVIE_LIST_TYPE));
             final Movie movie = intent.getParcelableExtra(getString(R.string.extraMovieContentKey));
             if (movie != null)
                 bindMovie(movie);
