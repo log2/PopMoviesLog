@@ -66,6 +66,8 @@
                         android:rating="@{movie.ratingAcross(5)}"
                         android:stepSize="0.5" />
 
+                    // FIXME add line for separation, fix ordering of subelements
+
                     <TextView
                         android:id="@+id/tv_releasedate"
                         android:layout_width="wrap_content"
