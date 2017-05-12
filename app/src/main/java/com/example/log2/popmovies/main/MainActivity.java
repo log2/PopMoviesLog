@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity
         if (savedInstanceState != null && savedInstanceState.containsKey("listType")) {
             String listTypeName = savedInstanceState.getString("listType");
             if (listTypeName != null)
-            return ListType.valueOf(ListType.class, listTypeName);
+                return ListType.valueOf(ListType.class, listTypeName);
         }
         return ListType.POPULAR;
     }
