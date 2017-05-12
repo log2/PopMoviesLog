@@ -50,6 +50,7 @@
                     tools:layout_constraintLeft_creator="1"
                     tools:layout_constraintRight_creator="1"
                     tools:text="@string/synopsis_placeholder" />
+                // FIXME add cards and padding
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/rv_trailers"
