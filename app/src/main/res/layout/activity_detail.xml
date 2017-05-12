@@ -32,7 +32,7 @@
 
                 <me.biubiubiu.justifytext.library.JustifyTextView
                     android:id="@+id/tv_synopsis"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/horizontal_margin"
                     android:layout_marginLeft="@dimen/horizontal_margin"
@@ -46,7 +46,7 @@
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/synopsisTextSize"
 
-                    app:layout_constraintBottom_toTopOf="@+id/rv_reviews"
+                    app:layout_constraintBottom_toTopOf="@+id/cardTrailers"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -56,43 +56,79 @@
                     tools:layout_constraintRight_creator="1"
                     tools:text="@string/synopsis_placeholder" />
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_trailers"
-                    android:layout_width="0dp"
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cardTrailers"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="@dimen/horizontal_margin"
+                    android:layout_marginLeft="@dimen/horizontal_margin"
+                    android:layout_marginRight="@dimen/horizontal_margin"
+                    android:layout_marginStart="@dimen/horizontal_margin"
+                    android:layout_marginTop="16dp"
+                    android:paddingLeft="@dimen/horizontal_padding"
+                    android:paddingRight="@dimen/horizontal_padding"
+                    android:paddingTop="@dimen/top_padding"
+                    app:cardBackgroundColor="@color/colorPrimary"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toTopOf="@+id/cardReviews"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_synopsis">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_trailers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/vertical_margin"
+                        android:layout_marginEnd="@dimen/horizontal_margin"
+                        android:layout_marginLeft="@dimen/horizontal_margin"
+                        android:layout_marginRight="@dimen/horizontal_margin"
+                        android:layout_marginStart="@dimen/horizontal_margin"
+                        android:layout_marginTop="@dimen/vertical_margin"
+                        android:clipToPadding="true"
+                        android:paddingLeft="@dimen/horizontal_padding"
+                        android:paddingRight="@dimen/horizontal_padding"
+                        android:paddingTop="@dimen/top_padding" />
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/cardReviews"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/horizontal_margin"
                     android:layout_marginLeft="@dimen/horizontal_margin"
                     android:layout_marginRight="@dimen/horizontal_margin"
                     android:layout_marginStart="@dimen/horizontal_margin"
-                    android:clipToPadding="true"
                     android:paddingLeft="@dimen/horizontal_padding"
                     android:paddingRight="@dimen/horizontal_padding"
                     android:paddingTop="@dimen/top_padding"
-                    app:layout_constraintBottom_toTopOf="@+id/rv_reviews"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_synopsis" />
-
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rv_reviews"
-                    android:layout_width="0dp"
-                    android:layout_height="128dp"
-                    android:layout_marginEnd="@dimen/horizontal_margin"
-                    android:layout_marginLeft="@dimen/horizontal_margin"
-                    android:layout_marginRight="@dimen/horizontal_margin"
-                    android:layout_marginStart="@dimen/horizontal_margin"
-                    android:clipToPadding="true"
-                    android:paddingLeft="@dimen/horizontal_padding"
-                    android:paddingRight="@dimen/horizontal_padding"
-                    android:paddingTop="@dimen/top_padding"
-
+                    app:cardBackgroundColor="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/rv_trailers" />
+                    app:layout_constraintTop_toBottomOf="@+id/cardTrailers">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rv_reviews"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/vertical_margin"
+                        android:layout_marginEnd="@dimen/horizontal_margin"
+                        android:layout_marginLeft="@dimen/horizontal_margin"
+                        android:layout_marginRight="@dimen/horizontal_margin"
+                        android:layout_marginStart="@dimen/horizontal_margin"
+                        android:layout_marginTop="@dimen/vertical_margin"
+                        android:clipToPadding="true"
+                        android:paddingLeft="@dimen/horizontal_padding"
+                        android:paddingRight="@dimen/horizontal_padding"
+                        android:paddingTop="@dimen/top_padding"
+
+                        />
+                </android.support.v7.widget.CardView>
 
 
             </android.support.constraint.ConstraintLayout>
