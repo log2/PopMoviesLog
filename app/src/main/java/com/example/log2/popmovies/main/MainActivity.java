@@ -207,6 +207,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onFailure(Call<MovieCount> call, Throwable t) {
+                // FIXME add automatic retry with snackbar for signalling problem, not just do alerting
                 alert("Couldn't initialize list");
                 t.printStackTrace();
             }
