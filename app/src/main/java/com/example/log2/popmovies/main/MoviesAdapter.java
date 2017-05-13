@@ -18,6 +18,7 @@ import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.log2.popmovies.R;
+import com.example.log2.popmovies.application.CustomApplication;
 import com.example.log2.popmovies.data.ListType;
 import com.example.log2.popmovies.helpers.DelayedWarning;
 import com.example.log2.popmovies.model.Movie;
@@ -39,18 +40,18 @@ import retrofit2.Callback;
  */
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesViewHolder> {
     private static final String TAG = MoviesAdapter.class.getSimpleName();
-    final APIHelper apiHelper;
     private final int totalResults;
+    private final Context context;
     private final View viewForSnackbar;
     private final ListType listType;
     private final MovieClickListener movieClickListener;
 
     public MoviesAdapter(Context context, View viewForSnackbar, ListType listType, int count, MovieClickListener movieClickListener) {
+        this.context = context;
         this.viewForSnackbar = viewForSnackbar;
         this.listType = listType;
         this.movieClickListener = movieClickListener;
         this.totalResults = count;
-        apiHelper = new APIHelper(context, viewForSnackbar);
     }
 
     @Override
@@ -71,6 +72,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
     @Override
     public int getItemCount() {
         return totalResults;
+    }
+
+    public APIHelper getApiHelper() {
+        return getCustomApplication().getApiHelper();
+    }
+
+    public CustomApplication getCustomApplication() {
+        return (CustomApplication) context.getApplicationContext();
     }
 
     public interface MovieClickListener {
@@ -117,9 +126,9 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                     int expectedWidth = 342;
                     //int expectedHeight = 513;
                     final DelayedWarning delayedWarning = DelayedWarning.showingTemporarily(pbLoading);
-                    Glide.with(context).load(apiHelper.getPosterWide(movie.posterPath))
+                    Glide.with(context).load(getApiHelper().getPosterWide(movie.posterPath))
                             .priority(Priority.LOW).preload();
-                    addGlideRequest(Glide.with(context).load(apiHelper.getPoster(expectedWidth, movie.posterPath))
+                    addGlideRequest(Glide.with(context).load(getApiHelper().getPoster(expectedWidth, movie.posterPath))
                             //.override(expectedWidth, expectedHeight)
                             .priority(Priority.IMMEDIATE)
                             .listener(new RequestListener<String, GlideDrawable>() {
@@ -159,7 +168,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             final int pageLength = 20;
             int initialPage = 1;
             final int page = initialPage + position / pageLength;
-            Call<MovieListResponse> call = apiHelper.getMovies(listType, page);
+            Call<MovieListResponse> call = getApiHelper().getMovies(listType, page);
             call.enqueue(new Callback<MovieListResponse>() {
                 @Override
                 public void onResponse(Call<MovieListResponse> call, retrofit2.Response<MovieListResponse> response) {

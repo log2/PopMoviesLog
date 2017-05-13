@@ -75,7 +75,6 @@ public class ScrollingActivity extends AppCompatActivity
     private ActivityScrollingBinding binding;
 
     private boolean isFavorite;
-    private APIHelper apiHelper;
 
     @Override
     public Loader<Boolean> onCreateLoader(int id, final Bundle args) {
@@ -251,7 +250,6 @@ public class ScrollingActivity extends AppCompatActivity
                 DataBindingUtil.setContentView(this, R.layout.activity_scrolling);
         ButterKnife.bind(this);
 
-        apiHelper = new APIHelper(this, fab);
         getSupportLoaderManager().initLoader(IS_FAVORITE_LOADER, null, this);
         if (!isOnline())
             Snackbar.make(fab, R.string.no_internet_no_details, Snackbar.LENGTH_LONG).show();
@@ -285,7 +283,7 @@ public class ScrollingActivity extends AppCompatActivity
 
         prepareFav();
 
-        apiHelper.getTrailersForMovie(movieId).enqueue(new Callback<TrailerListResponse>() {
+        getApiHelper().getTrailersForMovie(movieId).enqueue(new Callback<TrailerListResponse>() {
             @Override
             public void onResponse(Call<TrailerListResponse> call, Response<TrailerListResponse> response) {
                 trailersAdapter = new TrailersAdapter(new TrailersAdapter.OnClickListener() {
@@ -320,7 +318,7 @@ public class ScrollingActivity extends AppCompatActivity
 
             }
         });
-        apiHelper.getReviewsForMovie(movieId).enqueue(new Callback<ReviewListResponse>() {
+        getApiHelper().getReviewsForMovie(movieId).enqueue(new Callback<ReviewListResponse>() {
             @Override
             public void onResponse(Call<ReviewListResponse> call, Response<ReviewListResponse> response) {
                 reviewsAdapter = new ReviewsAdapter();
@@ -350,7 +348,7 @@ public class ScrollingActivity extends AppCompatActivity
         });
         Log.v(TAG, "Getting poster " + movie.posterPath);
 
-        Glide.with(this).load(apiHelper.getPosterWide(movie.posterPath))
+        Glide.with(this).load(getApiHelper().getPosterWide(movie.posterPath))
                 .priority(Priority.IMMEDIATE)
                 .animate(android.R.anim.fade_in)
                 .into(posterBackground);
@@ -363,5 +361,9 @@ public class ScrollingActivity extends AppCompatActivity
 
     public CustomApplication getCustomApplication() {
         return ((CustomApplication) getApplication());
+    }
+
+    public APIHelper getApiHelper() {
+        return getCustomApplication().getApiHelper();
     }
 }

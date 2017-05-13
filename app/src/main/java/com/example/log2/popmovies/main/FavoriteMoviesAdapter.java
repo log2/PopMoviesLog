@@ -17,6 +17,7 @@ import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.log2.popmovies.R;
+import com.example.log2.popmovies.application.CustomApplication;
 import com.example.log2.popmovies.data.FavoriteContract;
 import com.example.log2.popmovies.data.ListType;
 import com.example.log2.popmovies.helpers.DelayedWarning;
@@ -36,11 +37,13 @@ import retrofit2.Callback;
  */
 public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAdapter.MoviesViewHolder> {
     private static final String TAG = FavoriteMoviesAdapter.class.getSimpleName();
+    private final Context context;
     private final ListType listType;
     private final MovieClickListener movieClickListener;
     private final Cursor cursor;
 
     public FavoriteMoviesAdapter(Context context, ListType listType, Cursor cursor, MovieClickListener movieClickListener) {
+        this.context = context;
         this.listType = listType;
         this.cursor = cursor;
         this.movieClickListener = movieClickListener;
@@ -71,6 +74,14 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
         return cursor.getCount();
     }
 
+    public APIHelper getApiHelper() {
+        return getCustomApplication().getApiHelper();
+    }
+
+    public CustomApplication getCustomApplication() {
+        return (CustomApplication) context.getApplicationContext();
+    }
+
     public interface MovieClickListener {
         void clickMovie(Movie movie);
     }
@@ -78,7 +89,6 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
     public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         //private final TextView mv_position;
         private final Context context;
-        private final com.example.log2.popmovies.network.APIHelper apiHelper;
         @BindView(R.id.movie_image)
         ImageView movieView;
         @BindView(R.id.pb_loading)
@@ -90,7 +100,6 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
             super(view);
             ButterKnife.bind(this, view);
             this.context = context;
-            apiHelper = new APIHelper(context, view);
             movieView.setOnClickListener(this);
         }
 
@@ -112,9 +121,9 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
                     int expectedWidth = 342;
                     //int expectedHeight = 513;
                     final DelayedWarning delayedWarning = DelayedWarning.showingTemporarily(pbLoading);
-                    Glide.with(context).load(apiHelper.getPosterWide(movie.posterPath))
+                    Glide.with(context).load(getApiHelper().getPosterWide(movie.posterPath))
                             .priority(Priority.LOW).preload();
-                    addGlideRequest(Glide.with(context).load(apiHelper.getPoster(expectedWidth, movieContent.posterPath))
+                    addGlideRequest(Glide.with(context).load(getApiHelper().getPoster(expectedWidth, movieContent.posterPath))
                             //.override(expectedWidth, expectedHeight)
                             .priority(Priority.IMMEDIATE)
                             .listener(new RequestListener<String, GlideDrawable>() {
@@ -145,7 +154,7 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
 
 
         private void onMovie(ListType listType, final int position, final Response.Listener<Movie> listener) {
-            Call<Movie> call = apiHelper.getMovie(getIdAt(position));
+            Call<Movie> call = getApiHelper().getMovie(getIdAt(position));
             call.enqueue(new Callback<Movie>() {
                 @Override
                 public void onResponse(Call<Movie> call, retrofit2.Response<Movie> response) {

@@ -8,6 +8,7 @@ import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.integration.volley.VolleyUrlLoader;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.module.GlideModule;
+import com.example.log2.popmovies.application.CustomApplication;
 
 import java.io.InputStream;
 
@@ -19,7 +20,7 @@ public class SharedVolleyQueueGlideModule implements GlideModule {
 
     @Override
     public void registerComponents(Context context, Glide glide) {
-        glide.register(GlideUrl.class, InputStream.class, new VolleyUrlLoader.Factory(VolleyHolder.in(context).getRequestQueue()));
+        glide.register(GlideUrl.class, InputStream.class, new VolleyUrlLoader.Factory(((CustomApplication) context.getApplicationContext()).getVolleyHolder().getRequestQueue()));
         VolleyLog.DEBUG = true;
 
     }

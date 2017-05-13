@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity
     private DelayedWarning loadWarning;
     private GridLayoutManager layoutManager;
     private ListType listType = null;
-    private APIHelper apiHelper;
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, final Bundle args) {
@@ -191,8 +190,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startupAdapter(final Context context) {
-        apiHelper = new APIHelper(this, recyclerView);
-        apiHelper.getMoviesCount(listType).enqueue(new Callback<MovieCount>() {
+        getApiHelper().getMoviesCount(listType).enqueue(new Callback<MovieCount>() {
             @Override
             public void onResponse(Call<MovieCount> call, retrofit2.Response<MovieCount> response) {
 
@@ -377,5 +375,9 @@ public class MainActivity extends AppCompatActivity
             setTitle(listType == ListType.POPULAR ? getString(R.string.most_popular) : (listType == ListType.FAVORITES ? getString(R.string.favorite_movies) : getString(R.string.top_rated)));
             initializeAdapter();
         }
+    }
+
+    public APIHelper getApiHelper() {
+        return getCustomApplication().getApiHelper();
     }
 }
