@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.example.log2.popmovies.R;
+import com.example.log2.popmovies.application.CustomApplication;
 import com.example.log2.popmovies.data.FavoriteContract;
 import com.example.log2.popmovies.databinding.ActivityScrollingBinding;
 import com.example.log2.popmovies.model.Movie;
@@ -119,7 +120,7 @@ public class ScrollingActivity extends AppCompatActivity
             String message = (favoriteCheckBoxValue) ? getString(R.string.addToFavorite) : getString(
                     R.string.removeFromFavorite);
             Snackbar.make(fab, message, Snackbar.LENGTH_LONG)
-                    .setAction("UNDO", new View.OnClickListener() {
+                    .setAction(R.string.undoActionName, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             favorite();
@@ -169,6 +170,20 @@ public class ScrollingActivity extends AppCompatActivity
         if (itemId == R.id.share)
             shareMovie();
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        trackOurMainViewInApiHolder();
+    }
+
+    private void trackOurMainViewInApiHolder() {
+        getCustomApplication().getApiHelper().setView(fab);
+    }
+
+    private void untrackOurMainViewInApiHolder() {
+        getCustomApplication().getApiHelper().setView(null);
     }
 
     private void shareMovie() {
@@ -224,6 +239,12 @@ public class ScrollingActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        untrackOurMainViewInApiHolder();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding =
@@ -237,6 +258,7 @@ public class ScrollingActivity extends AppCompatActivity
 
         setSupportActionBar(toolbar);
 
+        trackOurMainViewInApiHolder();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -332,5 +354,14 @@ public class ScrollingActivity extends AppCompatActivity
                 .priority(Priority.IMMEDIATE)
                 .animate(android.R.anim.fade_in)
                 .into(posterBackground);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    public CustomApplication getCustomApplication() {
+        return ((CustomApplication) getApplication());
     }
 }

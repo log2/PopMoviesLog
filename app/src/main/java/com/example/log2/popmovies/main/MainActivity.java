@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.log2.popmovies.R;
+import com.example.log2.popmovies.application.CustomApplication;
 import com.example.log2.popmovies.data.FavoriteContract;
 import com.example.log2.popmovies.data.ListType;
 import com.example.log2.popmovies.detail.ScrollingActivity;
@@ -33,7 +34,6 @@ import com.example.log2.popmovies.helpers.DelayedWarning;
 import com.example.log2.popmovies.model.Movie;
 import com.example.log2.popmovies.model.MovieCount;
 import com.example.log2.popmovies.network.APIHelper;
-import com.example.log2.popmovies.network.VolleyHolder;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity
         recyclerView.setClipChildren(true);
         recyclerView.setItemViewCacheSize(100);
 
+        trackOurMainViewOnApiHolder();
         final Context context = this;
 
         layoutManager = new GridLayoutManager(context, getIdealSpanCount(), GridLayoutManager.VERTICAL, false);
@@ -208,7 +209,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onFailure(Call<MovieCount> call, Throwable t) {
                 // FIXME add automatic retry with snackbar for signalling problem, not just do alerting
-                alert("Couldn't initialize list");
+                alert(getString(R.string.couldInitialize));
                 t.printStackTrace();
             }
         });
@@ -287,13 +288,27 @@ public class MainActivity extends AppCompatActivity
 
         // FIXME anything to pause?
         super.onPause();
+        untrackOurMainViewOnApiHolder();
     }
+
 
     @Override
     protected void onResume() {
-
+        trackOurMainViewOnApiHolder();
         // FIXME anything to resume?
         super.onResume();
+    }
+
+    private void trackOurMainViewOnApiHolder() {
+        getCustomApplication().getApiHelper().setView(recyclerView);
+    }
+
+    private void untrackOurMainViewOnApiHolder() {
+        getCustomApplication().getApiHelper().setView(null);
+    }
+
+    private CustomApplication getCustomApplication() {
+        return (CustomApplication) getApplication();
     }
 
     @Override
@@ -310,7 +325,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onStop() {
-        VolleyHolder.in(this).cancelAll();
+        (getCustomApplication()).getVolleyHolder().cancelAll();
         stopLoading();
         super.onStop();
     }

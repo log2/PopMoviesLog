@@ -35,7 +35,7 @@ public class ChokeTracker {
         });
     }
 
-    public static ChokeTracker showingSnackbar(final View viewforSnackbar, final String s) {
+    public static ChokeTracker showingSnackbar(final @NonNull View viewforSnackbar, final String s) {
         class SnackbarTracker {
             private Snackbar snackbar;
 

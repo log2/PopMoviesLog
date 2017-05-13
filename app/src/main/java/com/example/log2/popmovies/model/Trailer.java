@@ -19,7 +19,9 @@ public final class Trailer implements Parcelable {
             return new Trailer[size];
         }
     };
+    @SuppressWarnings("HardCodedStringLiteral")
     private static final String YOUTUBE_VIDEO_BASE_URL = "https://www.youtube.com/watch?v=";
+    @SuppressWarnings("HardCodedStringLiteral")
     private static final String YOUTUBE_THUMBNAIL_URL_PATTERN =
             "https://img.youtube.com/vi/%s/mqdefault.jpg";
     @SerializedName("name")

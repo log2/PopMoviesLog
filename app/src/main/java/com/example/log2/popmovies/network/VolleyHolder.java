@@ -10,13 +10,12 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
 
 public class VolleyHolder {
-    private static VolleyHolder volleyHolder;
-    private static Context context;
     private final ImageLoader imageLoader;
+    private final Context context;
     private RequestQueue requestQueue;
 
     private VolleyHolder(Context context) {
-        VolleyHolder.context = context;
+        this.context = context;
         requestQueue = getRequestQueue();
 
         // NOTE: Not used anymore
@@ -42,10 +41,7 @@ public class VolleyHolder {
     }
 
     public static synchronized VolleyHolder in(Context context) {
-        if (volleyHolder == null) {
-            volleyHolder = new VolleyHolder(context);
-        }
-        return volleyHolder;
+        return new VolleyHolder(context);
     }
 
     public RequestQueue getRequestQueue() {

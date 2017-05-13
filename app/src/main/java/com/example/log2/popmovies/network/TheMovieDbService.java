@@ -13,6 +13,7 @@ import retrofit2.http.Query;
 
 public interface TheMovieDbService {
 
+    @SuppressWarnings("HardCodedStringLiteral")
     String BASE_URL = "http://api.themoviedb.org/3/";
 
     @GET("movie/popular/")

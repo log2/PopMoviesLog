@@ -17,6 +17,7 @@ import com.example.log2.popmovies.model.TrailerListResponse;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
@@ -34,17 +35,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by Lorenzo on 25/01/2017.
  */
 public class APIHelper {
-
     private static final String TAG = APIHelper.class.getSimpleName();
     private static final String POSTER_PATH_BASE_URL = "http://image.tmdb.org/t/p/w185/";
     private final Context context;
-    private final View viewforSnackbar;
-
+    private WeakReference<View> viewRef;
 
     public APIHelper(Context context, View viewforSnackbar) {
         this.context = context;
-        this.viewforSnackbar = viewforSnackbar;
+        setView(viewforSnackbar);
     }
+
 
     private static String obfuscateKey(HttpUrl url) {
         return url.toString().replaceAll("api_key=[0-9a-f]+", "api_key=xxx");
@@ -101,7 +101,9 @@ public class APIHelper {
                                              });
                                          }
                                      }
-                        , ChokeTracker.showingSnackbar(viewforSnackbar, context.getString(R.string.callChokingTMDB)));
+                        ,
+                        // FIXME provide workaround for when/if view is null
+                        ChokeTracker.showingSnackbar(viewRef.get(), context.getString(R.string.callChokingTMDB)));
             }
 
             @Override
@@ -189,6 +191,10 @@ public class APIHelper {
 
     public String getPosterWide(String posterPath) {
         return getPoster(780, posterPath);
+    }
+
+    public void setView(View view) {
+        this.viewRef = new WeakReference<>(view);
     }
 
     static class ServiceHolder {

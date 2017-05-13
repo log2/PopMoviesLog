@@ -186,12 +186,12 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                         boolean canRetry = t instanceof SocketTimeoutException;
                         Log.w(TAG, "Could not get page " + page + ", listType = " + listType + " due to: " + t.getMessage());
                         if (canRetry) {
-                            Snackbar.make(viewForSnackbar, "Network issues, retrying...", Snackbar.LENGTH_SHORT).show();
+                            Snackbar.make(viewForSnackbar, R.string.networkIssues, Snackbar.LENGTH_SHORT).show();
                             Log.v(TAG, "Retrying call...");
                             onMovie(listType, position, listener);
                         } else {
                             Log.wtf(TAG, "Could not retry due to fatal error, app is stuck", t);
-                            Snackbar.make(viewForSnackbar, "Network stuck, could not load", Snackbar.LENGTH_INDEFINITE).show();
+                            Snackbar.make(viewForSnackbar, R.string.networkStuck, Snackbar.LENGTH_INDEFINITE).show();
                         }
                     }
                 }
