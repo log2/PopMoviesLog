@@ -8,13 +8,13 @@
     <ImageView
         android:id="@+id/image_trailer_thumbnail"
         android:layout_width="match_parent"
-        android:layout_height="230dp"
+        android:layout_height="@dimen/trailerThumbnailSize"
         android:layout_marginEnd="@dimen/horizontal_margin"
         android:layout_marginLeft="@dimen/horizontal_margin"
         android:layout_marginRight="@dimen/horizontal_margin"
         android:layout_marginStart="@dimen/horizontal_margin"
-        android:adjustViewBounds="true">
-
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/trailer_thumbnail">
     </ImageView>
 
     <TextView
@@ -26,8 +26,8 @@
         android:layout_marginRight="@dimen/horizontal_margin"
         android:layout_marginStart="@dimen/horizontal_margin"
         android:textColor="@color/primary_text"
-        android:textSize="26sp"
-        tools:text="trailer name" />
+        android:textSize="@dimen/objNameTextSize"
+        tools:text="@string/exampleTrailerName" />
 
     <TextView
         android:id="@+id/trailer_type"
@@ -38,8 +38,7 @@
         android:layout_marginRight="@dimen/horizontal_margin"
         android:layout_marginStart="@dimen/horizontal_margin"
         android:textColor="@color/secondary_text"
-
-        android:textSize="22sp"
-        tools:text="trailer type" />
+        android:textSize="@dimen/objKindTextSize"
+        tools:text="@string/exampleTrailerType" />
 
 </LinearLayout>

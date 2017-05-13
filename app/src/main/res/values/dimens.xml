@@ -13,4 +13,7 @@
     <dimen name="mainContentPadding">0dp</dimen>
     <dimen name="mainContentMargin">0dp</dimen>
     <dimen name="synopsisTextSize">24sp</dimen>
+    <dimen name="objNameTextSize">26sp</dimen>
+    <dimen name="objKindTextSize">22sp</dimen>
+    <dimen name="trailerThumbnailSize">230dp</dimen>
 </resources>

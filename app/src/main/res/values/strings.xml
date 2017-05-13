@@ -4,8 +4,8 @@
     <string name="title_activity_detail">Movie details</string>
     <string name="most_popular">Most Popular Movies</string>
     <string name="top_rated">Top Rated Movies</string>
-    <string name="movie_title_placeholder" translatable="false">title</string>
-    <string name="release_date_placeholder">release date</string>
+    <string name="movie_title_placeholder" translatable="false">Terminator II</string>
+    <string name="release_date_placeholder">29 August 1997</string>
     <string name="synopsis_placeholder" translatable="false">synopsis.\n\n</string>
     <string name="popular_movies">Popular movies</string>
     <string name="movie_poster">Movie poster</string>
@@ -44,6 +44,16 @@
     <string name="title_activity_scrolling">ScrollingActivity</string>
 
     <string name="action_settings">Settings</string>
-    <string name="callChokingTMDB">TheMovieDB calls are being choked, please wait...</string>
+    <string name="callChokingTMDB">TheMovieDB calls are being choked, please wait…</string>
+    <string name="undoActionName">UNDO</string>
+    <string name="couldInitialize">Couldn\'t initialize list</string>
+    <string name="networkIssues">Network issues, retrying…</string>
+    <string name="networkStuck">Network stuck, could not load</string>
+    <string name="exampleTrailerType">Featurette</string>
+    <string name="exampleTrailerName">Schwartzie and his robotic eye</string>
+    <string name="exampleReviewerName">SkyNet74</string>
+    <string name="exampleReviewText">Not bad, though I craved for even more action</string>
+    <string name="moviePosterBackgroundDescription">Movie poster background</string>
+    <string name="trailer_thumbnail">Trailer thumbnail</string>
 
 </resources>
