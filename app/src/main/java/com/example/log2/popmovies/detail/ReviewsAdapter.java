@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.example.log2.popmovies.R;
 import com.example.log2.popmovies.model.Review;
+import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,7 +70,7 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ReviewVi
         @BindView(R.id.text_review_author)
         TextView mReviewAuthor;
         @BindView(R.id.text_review_content)
-        TextView mReviewContent;
+        ExpandableTextView mReviewContent;
 
         public ReviewViewHolder(final View itemView) {
             super(itemView);

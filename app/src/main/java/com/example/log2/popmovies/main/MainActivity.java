@@ -31,6 +31,7 @@ import com.example.log2.popmovies.data.FavoriteContract;
 import com.example.log2.popmovies.data.ListType;
 import com.example.log2.popmovies.detail.ScrollingActivity;
 import com.example.log2.popmovies.helpers.DelayedWarning;
+import com.example.log2.popmovies.helpers.SignallingUtils;
 import com.example.log2.popmovies.model.Movie;
 import com.example.log2.popmovies.model.MovieCount;
 import com.example.log2.popmovies.network.APIHelper;
@@ -38,16 +39,17 @@ import com.example.log2.popmovies.network.APIHelper;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
-import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static final String LIST_TYPE = "listType";
     private static final int FAVORITE_LOADER = 42;
     private static final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.rv_movies)
     RecyclerView recyclerView;
+    Call<MovieCount> moviesCountCall;
     private DelayedWarning loadWarning;
     private GridLayoutManager layoutManager;
     private ListType listType = null;
@@ -190,10 +192,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startupAdapter(final Context context) {
-        getApiHelper().getMoviesCount(listType).enqueue(new Callback<MovieCount>() {
+        APIHelper apiHelper = getApiHelper();
+        moviesCountCall = apiHelper.getMoviesCount(listType);
+        moviesCountCall.enqueue(apiHelper.wrapCallback(new APIHelper.SuccessOnlyCallback<MovieCount>() {
             @Override
             public void onResponse(Call<MovieCount> call, retrofit2.Response<MovieCount> response) {
-
                 recyclerView.setAdapter(new MoviesAdapter(context, toolbar, listType, response.body().count, new MoviesAdapter.MovieClickListener() {
 
                     @Override
@@ -203,14 +206,12 @@ public class MainActivity extends AppCompatActivity
                 }));
                 hideLoadWarning();
             }
-
+        }, new Runnable() {
             @Override
-            public void onFailure(Call<MovieCount> call, Throwable t) {
-                // FIXME add automatic retry with snackbar for signalling problem, not just do alerting
-                alert(getString(R.string.couldInitialize));
-                t.printStackTrace();
+            public void run() {
+                startupAdapter(context);
             }
-        });
+        }));
     }
 
     private void openMovieDetail(Movie movie) {
@@ -220,8 +221,8 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    private void alert(String s) {
-        Snackbar.make(recyclerView, s, Snackbar.LENGTH_LONG).show();
+    private void showSnackbar(String s) {
+        SignallingUtils.alert(this, recyclerView, s);
     }
 
     private void startLoading(Bundle queryBundle) {
@@ -254,7 +255,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("listType", listType.name());
+        outState.putString(LIST_TYPE, listType.name());
     }
 
     @Override
@@ -266,8 +267,8 @@ public class MainActivity extends AppCompatActivity
 
     @NonNull
     private ListType getListType(Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.containsKey("listType")) {
-            String listTypeName = savedInstanceState.getString("listType");
+        if (savedInstanceState != null && savedInstanceState.containsKey(LIST_TYPE)) {
+            String listTypeName = savedInstanceState.getString(LIST_TYPE);
             if (listTypeName != null)
                 return ListType.valueOf(ListType.class, listTypeName);
         }
@@ -283,18 +284,25 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onPause() {
-
-        // FIXME anything to pause?
         super.onPause();
         untrackOurMainViewOnApiHolder();
+        if (moviesCountCall != null) {
+            moviesCountCall.cancel();
+            moviesCountCall = null;
+        }
+        getApiHelper().pauseAll();
     }
 
 
     @Override
     protected void onResume() {
-        trackOurMainViewOnApiHolder();
-        // FIXME anything to resume?
         super.onResume();
+        restartActivities();
+    }
+
+    private void restartActivities() {
+        trackOurMainViewOnApiHolder();
+        getApiHelper().resumeAll();
     }
 
     private void trackOurMainViewOnApiHolder() {
@@ -317,8 +325,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onRestart() {
-        startLoading(null);
         super.onRestart();
+        startLoading(null);
+        restartActivities();
     }
 
     @Override
@@ -366,7 +375,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void showSnackbar(int resourceId) {
-        Snackbar.make(recyclerView, resourceId, Snackbar.LENGTH_LONG).show();
+        SignallingUtils.alert(this, recyclerView, resourceId);
     }
 
     private void setListType(ListType newListType) {

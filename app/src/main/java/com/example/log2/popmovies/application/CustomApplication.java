@@ -19,7 +19,7 @@ public class CustomApplication extends Application {
 
     public APIHelper getApiHelper() {
         if (apiHelper == null)
-            apiHelper = new APIHelper(getApplicationContext(), null);
+            apiHelper = new APIHelper(getApplicationContext());
         return apiHelper;
     }
 

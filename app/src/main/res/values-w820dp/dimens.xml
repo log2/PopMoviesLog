@@ -8,4 +8,5 @@
     <dimen name="horizontal_margin">20dp</dimen>
     <dimen name="vertical_margin">20dp</dimen>
     <dimen name="top_padding">8dp</dimen>
+    <dimen name="synopsisTextSize">32sp</dimen>
 </resources>

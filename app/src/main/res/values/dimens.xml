@@ -8,7 +8,6 @@
     <dimen name="top_padding">4dp</dimen>
     <dimen name="app_bar_height">460dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="text_margin">16dp</dimen>
     <dimen name="movieNoteSize">16sp</dimen>
     <dimen name="mainContentPadding">0dp</dimen>
     <dimen name="mainContentMargin">0dp</dimen>
@@ -16,4 +15,8 @@
     <dimen name="objNameTextSize">26sp</dimen>
     <dimen name="objKindTextSize">22sp</dimen>
     <dimen name="trailerThumbnailSize">230dp</dimen>
+    <dimen name="outer_cardview_elevation">8dp</dimen>
+    <dimen name="reviewTextSize">18sp</dimen>
+    <dimen name="reviewAuthorNameSize">11sp</dimen>
+    <dimen name="vertical_padding">8dp</dimen>
 </resources>

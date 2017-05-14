@@ -2,7 +2,6 @@ package com.example.log2.popmovies.detail;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,13 +99,9 @@ public class TrailersAdapter extends RecyclerView.Adapter<TrailersAdapter.Traile
 
         @Override
         public void onClick(final View view) {
-            if (trailers == null) {
-                Log.wtf(LOG_TAG, "OnClick handler call with empty trailers list.");
-            } else {
-                final int position = getAdapterPosition();
-                final Trailer trailer = trailers[position];
-                listener.onTrailerItemClick(trailer);
-            }
+            final int position = getAdapterPosition();
+            final Trailer trailer = trailers[position];
+            listener.onTrailerItemClick(trailer);
         }
     }
 }

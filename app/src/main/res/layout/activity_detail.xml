@@ -18,9 +18,7 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin">
+            android:layout_height="match_parent">
 
 
             <android.support.constraint.ConstraintLayout
@@ -34,10 +32,10 @@
                     android:id="@+id/tv_synopsis"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/horizontal_margin"
-                    android:layout_marginLeft="@dimen/horizontal_margin"
-                    android:layout_marginRight="@dimen/horizontal_margin"
-                    android:layout_marginStart="@dimen/horizontal_margin"
+                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    android:layout_marginRight="@dimen/activity_horizontal_margin"
+                    android:layout_marginStart="@dimen/activity_horizontal_margin"
                     android:layout_marginTop="@dimen/vertical_margin"
                     android:paddingLeft="@dimen/horizontal_padding"
                     android:paddingRight="@dimen/horizontal_padding"
@@ -60,17 +58,8 @@
                     android:id="@+id/cardTrailers"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="@dimen/horizontal_margin"
-                    android:layout_marginLeft="@dimen/horizontal_margin"
-                    android:layout_marginRight="@dimen/horizontal_margin"
-                    android:layout_marginStart="@dimen/horizontal_margin"
-                    android:layout_marginTop="16dp"
-                    android:paddingLeft="@dimen/horizontal_padding"
-                    android:paddingRight="@dimen/horizontal_padding"
-                    android:paddingTop="@dimen/top_padding"
-                    app:cardBackgroundColor="@color/colorPrimary"
-                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/cardview_light_background"
+                    app:cardElevation="@dimen/outer_cardview_elevation"
                     app:layout_constraintBottom_toTopOf="@+id/cardReviews"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -81,16 +70,7 @@
                         android:id="@+id/rv_trailers"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/vertical_margin"
-                        android:layout_marginEnd="@dimen/horizontal_margin"
-                        android:layout_marginLeft="@dimen/horizontal_margin"
-                        android:layout_marginRight="@dimen/horizontal_margin"
-                        android:layout_marginStart="@dimen/horizontal_margin"
-                        android:layout_marginTop="@dimen/vertical_margin"
-                        android:clipToPadding="true"
-                        android:paddingLeft="@dimen/horizontal_padding"
-                        android:paddingRight="@dimen/horizontal_padding"
-                        android:paddingTop="@dimen/top_padding" />
+                        android:clipToPadding="true" />
 
                 </android.support.v7.widget.CardView>
 
@@ -98,14 +78,10 @@
                     android:id="@+id/cardReviews"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/horizontal_margin"
-                    android:layout_marginLeft="@dimen/horizontal_margin"
-                    android:layout_marginRight="@dimen/horizontal_margin"
-                    android:layout_marginStart="@dimen/horizontal_margin"
-                    android:paddingLeft="@dimen/horizontal_padding"
-                    android:paddingRight="@dimen/horizontal_padding"
-                    android:paddingTop="@dimen/top_padding"
-                    app:cardBackgroundColor="@color/colorPrimary"
+                    android:layout_marginTop="@dimen/vertical_margin"
+                    android:paddingBottom="@dimen/vertical_padding"
+                    app:cardBackgroundColor="@color/cardview_light_background"
+                    app:cardElevation="@dimen/outer_cardview_elevation"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -116,17 +92,7 @@
                         android:id="@+id/rv_reviews"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/vertical_margin"
-                        android:layout_marginEnd="@dimen/horizontal_margin"
-                        android:layout_marginLeft="@dimen/horizontal_margin"
-                        android:layout_marginRight="@dimen/horizontal_margin"
-                        android:layout_marginStart="@dimen/horizontal_margin"
-                        android:layout_marginTop="@dimen/vertical_margin"
                         android:clipToPadding="true"
-                        android:paddingLeft="@dimen/horizontal_padding"
-                        android:paddingRight="@dimen/horizontal_padding"
-                        android:paddingTop="@dimen/top_padding"
-
                         />
                 </android.support.v7.widget.CardView>
 

@@ -11,7 +11,7 @@ import com.example.log2.popmovies.data.FavoriteContract.FavoriteEntry;
 public class FavoriteDbHelper extends SQLiteOpenHelper {
 
     // The database name
-    private static final String DATABASE_NAME = "favorites.db";
+    private static final String DATABASE_NAME = "favorites.db"; //NON-NLS
 
     // If you change the database schema, you must increment the database version
     private static final int DATABASE_VERSION = 3;
@@ -25,11 +25,11 @@ public class FavoriteDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
         // Create a table to hold data
-        final String SQL_CREATE_TABLE = "CREATE TABLE " + FavoriteEntry.TABLE_NAME + " (" +
-                FavoriteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                FavoriteEntry.COLUMN_TMDB_ID + " TEXT NOT NULL, " +
-                FavoriteEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
-                FavoriteEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+        final String SQL_CREATE_TABLE = "CREATE TABLE " + FavoriteEntry.TABLE_NAME + " (" + //NON-NLS
+                FavoriteEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + //NON-NLS
+                FavoriteEntry.COLUMN_TMDB_ID + " TEXT NOT NULL, " + //NON-NLS
+                FavoriteEntry.COLUMN_TITLE + " TEXT NOT NULL, " + //NON-NLS
+                FavoriteEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" + //NON-NLS
                 "); ";
 
         sqLiteDatabase.execSQL(SQL_CREATE_TABLE);
@@ -37,7 +37,7 @@ public class FavoriteDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + FavoriteEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + FavoriteEntry.TABLE_NAME); //NON-NLS
         onCreate(sqLiteDatabase);
     }
 }

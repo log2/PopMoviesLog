@@ -1,7 +1,6 @@
 package com.example.log2.popmovies.main;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,12 +20,14 @@ import com.example.log2.popmovies.R;
 import com.example.log2.popmovies.application.CustomApplication;
 import com.example.log2.popmovies.data.ListType;
 import com.example.log2.popmovies.helpers.DelayedWarning;
+import com.example.log2.popmovies.helpers.SignallingUtils;
 import com.example.log2.popmovies.model.Movie;
 import com.example.log2.popmovies.model.MovieListResponse;
 import com.example.log2.popmovies.network.APIHelper;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.text.MessageFormat;
 import java.util.List;
 
 import butterknife.BindView;
@@ -69,6 +70,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         holder.setMovie(position);
     }
 
+
     @Override
     public int getItemCount() {
         return totalResults;
@@ -109,7 +111,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            Log.v(TAG, "Clicked " + adapterPosition);
+            Log.v(TAG, MessageFormat.format("Clicked {0}", adapterPosition));
 
             movieClickListener.clickMovie(movie);
         }
@@ -175,11 +177,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                     final MovieListResponse movieListResponse = response.body();
                     if (movieListResponse == null)
 
-                        onFailure(call, new RuntimeException("movie response is null (code = " + response.code() + ", message = " + response.message() + ")"));
+                        onFailure(call, new RuntimeException(MessageFormat.format("movie response is null (code = {0}, message = {1})", response.code(), response.message())));
                     else {
                         List<Movie> movies = movieListResponse.movies;
                         if (movies == null)
-                            onFailure(call, new RuntimeException("movie list is null (code = " + movieListResponse.statusCode + ", message = " + movieListResponse.statusMessage + ")"));
+                            onFailure(call, new RuntimeException(MessageFormat.format("movie list is null (code = {0}, message = {1})", movieListResponse.statusCode, movieListResponse.statusMessage)));
                         else {
                             Movie movie = movies.get(position % pageLength);
                             listener.onResponse(movie);
@@ -193,14 +195,14 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                         Log.v(TAG, "Ignoring an already canceled call");
                     } else {
                         boolean canRetry = t instanceof SocketTimeoutException;
-                        Log.w(TAG, "Could not get page " + page + ", listType = " + listType + " due to: " + t.getMessage());
+                        Log.w(TAG, MessageFormat.format("Could not get page {0}, listType = {1} due to: {2}", page, listType, t.getMessage()));
                         if (canRetry) {
-                            Snackbar.make(viewForSnackbar, R.string.networkIssues, Snackbar.LENGTH_SHORT).show();
+                            SignallingUtils.alert(context, viewForSnackbar, R.string.networkIssues);
                             Log.v(TAG, "Retrying call...");
                             onMovie(listType, position, listener);
                         } else {
                             Log.wtf(TAG, "Could not retry due to fatal error, app is stuck", t);
-                            Snackbar.make(viewForSnackbar, R.string.networkStuck, Snackbar.LENGTH_INDEFINITE).show();
+                            SignallingUtils.alert(context, viewForSnackbar, R.string.networkStuck);
                         }
                     }
                 }
