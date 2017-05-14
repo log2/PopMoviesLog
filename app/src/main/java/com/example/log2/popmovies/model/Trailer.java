@@ -6,8 +6,6 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
 public final class Trailer implements Parcelable {
-
-
     public static final Creator<Trailer> CREATOR = new Creator<Trailer>() {
         @Override
         public Trailer createFromParcel(final Parcel in) {
@@ -20,46 +18,45 @@ public final class Trailer implements Parcelable {
         }
     };
     @SuppressWarnings("HardCodedStringLiteral")
-    private static final String YOUTUBE_VIDEO_BASE_URL = "https://www.youtube.com/watch?v=";
+    private static final String YOUTUBE_VIDEO_PATTERN = "https://www.youtube.com/watch?v=%s";
     @SuppressWarnings("HardCodedStringLiteral")
     private static final String YOUTUBE_THUMBNAIL_URL_PATTERN =
             "https://img.youtube.com/vi/%s/mqdefault.jpg";
     @SerializedName("name")
-    private String mName;
+    private String name;
     @SerializedName("key")
-    private String mId;
+    private String id;
     @SerializedName("type")
-    private String mType;
+    private String type;
 
 
     public Trailer(final Parcel in) {
-        mName = in.readString();
-        mId = in.readString();
-        mType = in.readString();
+        name = in.readString();
+        id = in.readString();
+        type = in.readString();
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public String getLink() {
-        return YOUTUBE_VIDEO_BASE_URL + mId;
+        return String.format(YOUTUBE_VIDEO_PATTERN, id);
     }
 
     public String getThumbnailLink() {
-        return String.format(YOUTUBE_THUMBNAIL_URL_PATTERN, mId);
+        return String.format(YOUTUBE_THUMBNAIL_URL_PATTERN, id);
     }
 
     public String getType() {
-        return mType;
+        return type;
     }
-
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeString(mName);
-        dest.writeString(mId);
-        dest.writeString(mType);
+        dest.writeString(name);
+        dest.writeString(id);
+        dest.writeString(type);
     }
 
 
