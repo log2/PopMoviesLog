@@ -293,6 +293,8 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         restartActivities();
+        if (listType == ListType.FAVORITES)
+            initializeAdapter();
     }
 
     private void restartActivities() {
