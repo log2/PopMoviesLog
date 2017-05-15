@@ -8,9 +8,9 @@
     <string name="synopsis_placeholder" translatable="false">synopsis.\n\n</string>
     <string name="popular_movies">Popular movies</string>
     <string name="movie_poster">Movie poster</string>
-    <string name="internet_needed_for_app">Sorry, you NEED Internet for this app</string>
+    <string name="internet_needed_for_app">Network not detected, data shown might be stale</string>
     <string name="malformed_json_object">Malformed JSON Object (item #{0})</string>
-    <string name="no_internet_no_details">No Internet, no movie details. Sorry!</string>
+    <string name="no_internet_no_details">Internet not detected, data shown might be stale or incomplete</string>
     <string name="preparingMoviesList">Preparing movies list…</string>
     <string name="top_rated_movies">Show Top Rated first</string>
     <string name="most_popular_movies">Show Most Popular first</string>

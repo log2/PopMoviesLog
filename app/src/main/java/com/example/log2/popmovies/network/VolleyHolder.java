@@ -14,7 +14,7 @@ public class VolleyHolder {
     private final Context context;
     private RequestQueue requestQueue;
 
-    private VolleyHolder(Context context) {
+    public VolleyHolder(Context context) {
         this.context = context;
         requestQueue = getRequestQueue();
 
@@ -35,13 +35,8 @@ public class VolleyHolder {
                     }
                 });
 
-
-// Start the queue
+        // Start the queue
         requestQueue.start();
-    }
-
-    public static synchronized VolleyHolder in(Context context) {
-        return new VolleyHolder(context);
     }
 
     public RequestQueue getRequestQueue() {

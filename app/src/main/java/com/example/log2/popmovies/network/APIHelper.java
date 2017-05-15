@@ -1,8 +1,9 @@
 package com.example.log2.popmovies.network;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 
 import com.example.log2.popmovies.BuildConfig;
@@ -19,21 +20,27 @@ import com.example.log2.popmovies.model.TrailerListResponse;
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
+import okhttp3.CacheControl;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
+
+import static okhttp3.logging.HttpLoggingInterceptor.Level.HEADERS;
+import static okhttp3.logging.HttpLoggingInterceptor.Level.NONE;
 
 /**
  * Created by Lorenzo on 25/01/2017.
@@ -43,102 +50,30 @@ public class APIHelper {
     public static final String X_RATE_LIMIT_REMAINING = "X-RateLimit-Remaining"; //NON-NLS
     private static final String TAG = APIHelper.class.getSimpleName();
     private final Context context;
-    ServiceHolder serviceHolder = new ServiceHolder();
+    private ServiceHolder serviceHolder;
     private WeakReference<View> viewRef;
-
 
     public APIHelper(Context context) {
         this.context = context;
+        serviceHolder = new ServiceHolder(context);
     }
 
     private static String obfuscateKey(HttpUrl url) {
-        return url.toString().replaceAll("api_key=[0-9a-f]+", "api_key=xxx");
+        return obfuscateKey(url.toString());
+    }
+
+    private static String obfuscateKey(String text) {
+        return text.replaceAll("api_key=[0-9a-f]+", "api_key=xxx");
+    }
+
+    public static boolean detectNetwork(Context context) {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 
     private <E> Call<E> trackCall(final Call<E> call) {
-        return new Call<E>() {
-            private Call<E> safeCopy;
-
-            @Override
-            public Response<E> execute() throws IOException {
-                return call.execute();
-            }
-
-            @Override
-            public void enqueue(final Callback<E> callback) {
-                safeCopy = trackCall(call.clone());
-                serviceHolder.performWhenNotChoked(new Runnable() {
-                                                       public void run() {
-                                                           call.enqueue(new Callback<E>() {
-                                                               @Override
-                                                               public void onResponse(Call<E> call, Response<E> response) {
-                                                                   int code = response.code();
-                                                                   Log.v(TAG, MessageFormat.format("Got response with code {0} from call on {1}", code, obfuscateKey(call.request().url())));
-
-                                                                   Headers headers = response.headers();
-                                                                   if (!response.isSuccessful())
-                                                                       Log.w(TAG, MessageFormat.format("HTTP Response Code is {0}", code));
-                                                                   if (code == 404) {
-                                                                       onFailure(call, new IllegalArgumentException("Bad address, 404"));
-                                                                   } else {
-                                                                       // See: https://www.themoviedb.org/talk/5317af69c3a3685c4a0003b1
-
-                                                                       if (headers.names().contains(X_RATE_LIMIT_REMAINING)) {
-                                                                           serviceHolder.setRemainingValue(Integer.valueOf(headers.get(X_RATE_LIMIT_REMAINING)));
-                                                                       }
-                                                                   }
-                                                                   if (code == 429) {
-                                                                       int retryAfter = headers.names().contains(RETRY_AFTER) ?
-                                                                               Math.max(1, Integer.valueOf(headers.get(RETRY_AFTER))) : 1;
-
-                                                                       Log.v(TAG, MessageFormat.format("Call was rate limited, re-scheduling automatically in {0} s as required", retryAfter));
-                                                                       serviceHolder.deplete(retryAfter);
-                                                                       safeCopy.enqueue(callback);
-                                                                   } else
-                                                                       callback.onResponse(call, response);
-                                                               }
-
-                                                               @Override
-                                                               public void onFailure(Call<E> call, Throwable t) {
-                                                                   callback.onFailure(call, t);
-                                                               }
-                                                           });
-                                                       }
-                                                   }
-                        ,
-                        getChokeTracker());
-            }
-
-            @Override
-            public boolean isExecuted() {
-                return call.isExecuted();
-            }
-
-            @Override
-            public void cancel() {
-                call.cancel();
-                if (safeCopy != null)
-                    safeCopy.cancel();
-            }
-
-            @Override
-            public boolean isCanceled() {
-                return call.isCanceled();
-            }
-
-            @SuppressWarnings("CloneDoesntCallSuperClone")
-            @Override
-            public Call<E> clone() {
-                // Intentionally wrapped clone
-                return trackCall(call.clone());
-            }
-
-            @Override
-            public Request request() {
-                return call.request();
-            }
-        }
-                ;
+        return new AutoRetryingCall<>(call);
     }
 
     private ChokeTracker getChokeTracker() {
@@ -155,20 +90,12 @@ public class APIHelper {
         return serviceHolder.service;
     }
 
-    public Call<MovieListResponse> getPopularMovies(int page) {
-        return trackCall(service().getPopularMovies(page, getApiKey()));
+    public Call<MovieListResponse> getMovies(String type, int page) {
+        return trackCall(service().getMovies(type, page, getApiKey()));
     }
 
-    public Call<MovieListResponse> getTopRatedMovies(int page) {
-        return trackCall(service().getTopRatedMovies(page, getApiKey()));
-    }
-
-    public Call<MovieCount> getPopularMoviesCount() {
-        return trackCall(service().getPopularMoviesCount(getApiKey()));
-    }
-
-    public Call<MovieCount> getTopRatedMoviesCount() {
-        return trackCall(service().getTopRatedMoviesCount(getApiKey()));
+    public Call<MovieCount> getMoviesCount(String type) {
+        return trackCall(service().getMoviesCount(type, getApiKey()));
     }
 
     public Call<ReviewListResponse> getReviewsForMovie(final String id) {
@@ -184,11 +111,15 @@ public class APIHelper {
     }
 
     public Call<MovieListResponse> getMovies(ListType listType, int page) {
-        return listType == ListType.POPULAR ? getPopularMovies(page) : getTopRatedMovies(page);
+        if (listType.isProvidedByTMDB()) return getMovies(listType.getExternalName(), page);
+        else
+            throw new IllegalArgumentException("List type " + listType + " is not TMDB-provided, can't use here");
     }
 
     public Call<MovieCount> getMoviesCount(ListType listType) {
-        return listType == ListType.POPULAR ? getPopularMoviesCount() : getTopRatedMoviesCount();
+        if (listType.isProvidedByTMDB()) return getMoviesCount(listType.getExternalName());
+        else
+            throw new IllegalArgumentException("List type " + listType + " is not TMDB-provided, can't use here");
     }
 
     public String getPoster(int expectedWidth, String posterId) {
@@ -213,8 +144,12 @@ public class APIHelper {
 
             @Override
             public void onFailure(Call<E> call, Throwable t) {
-                SignallingUtils.alert(context, viewRef.get(), R.string.networkIssuesDetected);
-                rescheduleAction.run();
+                if (detectNetwork(context)) {
+                    SignallingUtils.alert(context, viewRef.get(), R.string.networkIssuesDetected);
+                    rescheduleAction.run();
+                } else {
+                    Timber.w("Could not get URL %s content, network appear non-working right now", obfuscateKey(call.request().url()));
+                }
             }
         };
     }
@@ -229,37 +164,113 @@ public class APIHelper {
 
     public interface SuccessOnlyCallback<E> {
         void onResponse(Call<E> call, retrofit2.Response<E> response);
-
     }
 
+    /**
+     * Disclaimer: offline cache handling inspired by https://github.com/adavis/adept-android/tree/retrofit2-cache
+     */
     static class ServiceHolder {
         private static final int lowLimit = 1;
+        private static final String CACHE_CONTROL = "Cache-Control";
+        final TheMovieDbService service;
         private final Handler handler = new Handler();
-        private int remaining;
-        final TheMovieDbService service = createServiceOnce();
-
+        private final Context context;
+        // At least one slot for calls
+        private int remaining = 1;
         private List<Runnable> paused = new ArrayList<>();
-
         private volatile boolean retryAllowed = true;
 
-        private TheMovieDbService createServiceOnce() {
-            int cacheSize = 50 * 1024 * 1024; // 50 MiB
-            Cache cache = new Cache(new File("."), cacheSize);
+        ServiceHolder(Context context) {
+            this.context = context;
+            service = createServiceOnce();
+        }
 
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .cache(cache)
-                    .build();
-            final Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(TheMovieDbService.BASE_URL)
+        private static HttpLoggingInterceptor provideHttpLoggingInterceptor() {
+            HttpLoggingInterceptor httpLoggingInterceptor =
+                    new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+                        @Override
+                        public void log(String message) {
+                            Timber.d(obfuscateKey(message));
+                        }
+                    });
+            httpLoggingInterceptor.setLevel(BuildConfig.DEBUG ? HEADERS : NONE);
+            return httpLoggingInterceptor;
+        }
+
+        public static Interceptor provideCacheInterceptor() {
+            return new Interceptor() {
+                @Override
+                public okhttp3.Response intercept(Chain chain) throws IOException {
+                    okhttp3.Response response = chain.proceed(chain.request());
+
+                    // re-write response header to force use of cache
+                    CacheControl cacheControl = new CacheControl.Builder()
+                            .maxAge(5, TimeUnit.MINUTES)
+                            .build();
+
+                    return response.newBuilder()
+                            .header(CACHE_CONTROL, cacheControl.toString())
+                            .build();
+                }
+            };
+        }
+
+        public Retrofit provideRetrofit(String baseUrl) {
+            return new Retrofit.Builder()
+                    .baseUrl(baseUrl)
+                    .client(provideOkHttpClient())
                     .addConverterFactory(GsonConverterFactory.create())
                     .validateEagerly(true)
-                    .client(client)
                     .build();
+        }
 
-            final Class<TheMovieDbService> theMovieDbServiceDefinition = TheMovieDbService.class;
+        private OkHttpClient provideOkHttpClient() {
+            return new OkHttpClient.Builder()
+                    .addInterceptor(provideHttpLoggingInterceptor())
+                    .addInterceptor(provideOfflineCacheInterceptor())
+                    .addNetworkInterceptor(provideCacheInterceptor())
+                    .cache(provideCache())
+                    .build();
+        }
 
-            remaining = 1; // At least one
-            return retrofit.create(theMovieDbServiceDefinition);
+        private Cache provideCache() {
+            try {
+                return new Cache(new File(context.getCacheDir(), "http-cache"),
+                        50 * 1024 * 1024); // 50 MiB
+            } catch (Exception e) {
+                Timber.e(e, "Could not create cache!");
+                return null;
+            }
+        }
+
+        public boolean hasNetwork() {
+            return detectNetwork(context);
+        }
+
+        public Interceptor provideOfflineCacheInterceptor() {
+            return new Interceptor() {
+                @Override
+                public okhttp3.Response intercept(Chain chain) throws IOException {
+                    Request request = chain.request();
+
+                    if (!hasNetwork()) {
+                        CacheControl cacheControl = new CacheControl.Builder()
+                                .maxStale(7, TimeUnit.DAYS)
+                                .build();
+
+                        request = request.newBuilder()
+                                .cacheControl(cacheControl)
+                                .build();
+                    }
+
+                    return chain.proceed(request);
+                }
+            };
+        }
+
+
+        private TheMovieDbService createServiceOnce() {
+            return provideRetrofit(TheMovieDbService.BASE_URL).create(TheMovieDbService.class);
         }
 
         public void trackRemaining(final int remaining, int delay) {
@@ -280,7 +291,7 @@ public class APIHelper {
         private void setRemainingValue(int remaining) {
             synchronized (this) {
                 this.remaining = remaining;
-                Log.v(TAG, MessageFormat.format("Set remaining call value to {0}", remaining));
+                Timber.v("Set remaining call value to %d", remaining);
             }
         }
 
@@ -294,13 +305,15 @@ public class APIHelper {
                 }
                 callLimit = remaining;
             }
-            if (canRun) {
+            if (canRun || !hasNetwork()) {
+                // Always execute code when no network is detected
+                // (offline cache will be used instead)
                 runnable.run();
                 chokeTracker.hide();
             } else {
                 if (isRetryAllowed()) {
                     chokeTracker.signalChoke();
-                    Log.v(TAG, MessageFormat.format("Delaying call to cope with rate limitations (call limit {0})", callLimit));
+                    Timber.v("Delaying call to cope with rate limitations (call limit %d)", callLimit);
                     withDelay(1, new Runnable() {
                         @Override
                         public void run() {
@@ -309,13 +322,13 @@ public class APIHelper {
                                 performWhenNotChoked(runnable, chokeTracker);
 
                             } else {
-                                Log.w(TAG, "Retry not allowed anymore since we planned a retry, no more trials will be performed (application is paused)");
+                                Timber.w("Retry not allowed anymore since we planned a retry, no more trials will be performed (application is paused)");
                                 addPaused(runnable);
                             }
                         }
                     });
                 } else {
-                    Log.w(TAG, "Retry not allowed, application is paused");
+                    Timber.w("Retry not allowed, application is paused");
                     addPaused(runnable);
                 }
             }
@@ -353,6 +366,100 @@ public class APIHelper {
                 List<Runnable> pausedCopy = new ArrayList<>(paused);
                 paused.clear();
                 return pausedCopy;
+            }
+        }
+    }
+
+    private class AutoRetryingCall<E> implements Call<E> {
+        private final Call<E> call;
+        private Call<E> safeCopy;
+
+        public AutoRetryingCall(Call<E> call) {
+            this.call = call;
+        }
+
+        @Override
+        public Response<E> execute() throws IOException {
+            return call.execute();
+        }
+
+        @Override
+        public void enqueue(final Callback<E> callback) {
+            safeCopy = trackCall(call.clone());
+            serviceHolder.performWhenNotChoked(new Runnable() {
+                public void run() {
+                    call.enqueue(new AutoRetryingCallback(callback));
+                }
+            }, getChokeTracker());
+        }
+
+        @Override
+        public boolean isExecuted() {
+            return call.isExecuted();
+        }
+
+        @Override
+        public void cancel() {
+            call.cancel();
+            if (safeCopy != null)
+                safeCopy.cancel();
+        }
+
+        @Override
+        public boolean isCanceled() {
+            return call.isCanceled();
+        }
+
+        @SuppressWarnings("CloneDoesntCallSuperClone")
+        @Override
+        public Call<E> clone() {
+            // Intentionally wrapped clone
+            return trackCall(call.clone());
+        }
+
+        @Override
+        public Request request() {
+            return call.request();
+        }
+
+        private class AutoRetryingCallback implements Callback<E> {
+            private final Callback<E> callback;
+
+            public AutoRetryingCallback(Callback<E> callback) {
+                this.callback = callback;
+            }
+
+            @Override
+            public void onResponse(Call<E> call, Response<E> response) {
+                int code = response.code();
+                Timber.v("Got response with code %d from call on %s", code, obfuscateKey(call.request().url()));
+
+                Headers headers = response.headers();
+                if (!response.isSuccessful())
+                    Timber.w("HTTP Response Code is %d", code);
+                if (code == 404) {
+                    onFailure(call, new IllegalArgumentException("Bad address, 404"));
+                } else {
+                    // See: https://www.themoviedb.org/talk/5317af69c3a3685c4a0003b1
+
+                    if (headers.names().contains(X_RATE_LIMIT_REMAINING)) {
+                        serviceHolder.setRemainingValue(Integer.valueOf(headers.get(X_RATE_LIMIT_REMAINING)));
+                    }
+                }
+                if (code == 429) {
+                    int retryAfter = headers.names().contains(RETRY_AFTER) ?
+                            Math.max(1, Integer.valueOf(headers.get(RETRY_AFTER))) : 1;
+
+                    Timber.v("Call was rate limited, re-scheduling automatically in %d s as required", retryAfter);
+                    serviceHolder.deplete(retryAfter);
+                    safeCopy.enqueue(callback);
+                } else
+                    callback.onResponse(call, response);
+            }
+
+            @Override
+            public void onFailure(Call<E> call, Throwable t) {
+                callback.onFailure(call, t);
             }
         }
     }

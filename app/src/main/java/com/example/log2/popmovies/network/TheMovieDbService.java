@@ -16,20 +16,14 @@ public interface TheMovieDbService {
     @SuppressWarnings("HardCodedStringLiteral")
     String BASE_URL = "http://api.themoviedb.org/3/";
 
-    @GET("movie/popular/")
-    Call<MovieListResponse> getPopularMovies(@Query("page") int page, @Query("api_key") String apiKey);
-
-    @GET("movie/top_rated/")
-    Call<MovieListResponse> getTopRatedMovies(@Query("page") int page, @Query("api_key") String apiKey);
+    @GET("movie/{sort}/")
+    Call<MovieListResponse> getMovies(@Path("sort") String sort, @Query("page") int page, @Query("api_key") String apiKey);
 
     @GET("movie/{id}")
     Call<Movie> getMovie(@Path("id") String id, @Query("api_key") String apiKey);
 
-    @GET("movie/popular/")
-    Call<MovieCount> getPopularMoviesCount(@Query("api_key") String apiKey);
-
-    @GET("movie/top_rated/")
-    Call<MovieCount> getTopRatedMoviesCount(@Query("api_key") String apiKey);
+    @GET("movie/{sort}/")
+    Call<MovieCount> getMoviesCount(@Path("sort") String sort, @Query("api_key") String apiKey);
 
     @GET("movie/{id}/reviews")
     Call<ReviewListResponse> getReviewsForMovie(@Path("id") String id, @Query("api_key") String apiKey);

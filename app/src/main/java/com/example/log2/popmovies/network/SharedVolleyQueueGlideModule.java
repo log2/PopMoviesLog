@@ -20,7 +20,8 @@ public class SharedVolleyQueueGlideModule implements GlideModule {
 
     @Override
     public void registerComponents(Context context, Glide glide) {
-        glide.register(GlideUrl.class, InputStream.class, new VolleyUrlLoader.Factory(((CustomApplication) context.getApplicationContext()).getVolleyHolder().getRequestQueue()));
+        CustomApplication customApplication = (CustomApplication) context.getApplicationContext();
+        glide.register(GlideUrl.class, InputStream.class, new VolleyUrlLoader.Factory(customApplication.getVolleyHolder().getRequestQueue()));
         VolleyLog.DEBUG = true;
 
     }
