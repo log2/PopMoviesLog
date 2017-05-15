@@ -1,6 +1,9 @@
 package com.example.log2.popmovies.main;
 
+import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +58,11 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         this.totalResults = count;
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private static boolean isDestroyed(Activity activity) {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && activity.isDestroyed();
+    }
+
     @Override
     public MoviesViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
@@ -70,7 +78,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         holder.setMovie(position);
     }
 
-
     @Override
     public int getItemCount() {
         return totalResults;
@@ -82,6 +89,10 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
 
     public CustomApplication getCustomApplication() {
         return (CustomApplication) context.getApplicationContext();
+    }
+
+    private boolean isDestroyed(Context context) {
+        return isDestroyed((Activity) context);
     }
 
     public interface MovieClickListener {
@@ -121,39 +132,42 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
             onMovie(listType, position, new Response.Listener<Movie>() {
                 @Override
                 public void onResponse(Movie movie) {
+                    if (isDestroyed(context)) {
+                        Timber.v("Skipping fitem illing in a destroyed activity");
+                    } else {
+                        MoviesViewHolder.this.movie = movie;
+                        // w185 -> 185x277
+                        // w342 -> 342x513
+                        int expectedWidth = 342;
+                        //int expectedHeight = 513;
+                        final DelayedWarning delayedWarning = DelayedWarning.showingTemporarily(pbLoading);
+                        Glide.with(context).load(getApiHelper().getPosterWide(movie.posterPath))
+                                .priority(Priority.LOW).preload();
+                        addGlideRequest(Glide.with(context).load(getApiHelper().getPoster(expectedWidth, movie.posterPath))
+                                //.override(expectedWidth, expectedHeight)
+                                .priority(Priority.IMMEDIATE)
+                                .listener(new RequestListener<String, GlideDrawable>() {
+                                    @Override
+                                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                        hideLoadingIndicator();
+                                        return false;
+                                    }
 
-                    MoviesViewHolder.this.movie = movie;
-                    // w185 -> 185x277
-                    // w342 -> 342x513
-                    int expectedWidth = 342;
-                    //int expectedHeight = 513;
-                    final DelayedWarning delayedWarning = DelayedWarning.showingTemporarily(pbLoading);
-                    Glide.with(context).load(getApiHelper().getPosterWide(movie.posterPath))
-                            .priority(Priority.LOW).preload();
-                    addGlideRequest(Glide.with(context).load(getApiHelper().getPoster(expectedWidth, movie.posterPath))
-                            //.override(expectedWidth, expectedHeight)
-                            .priority(Priority.IMMEDIATE)
-                            .listener(new RequestListener<String, GlideDrawable>() {
-                                @Override
-                                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                    hideLoadingIndicator();
-                                    return false;
-                                }
+                                    private void hideLoadingIndicator() {
+                                        delayedWarning.hide();
+                                    }
 
-                                private void hideLoadingIndicator() {
-                                    delayedWarning.hide();
-                                }
-
-                                @Override
-                                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                    hideLoadingIndicator();
-                                    return false;
-                                }
-                            }).error(R.drawable.ic_load_failed)
-                            //.placeholder(android.R.drawable.gallery_thumb)
-                            //.crossFade(android.R.anim.fade_in, 250)
-                            .animate(android.R.anim.fade_in)
-                            .into(movieView).getRequest());
+                                    @Override
+                                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                        hideLoadingIndicator();
+                                        return false;
+                                    }
+                                }).error(R.drawable.ic_load_failed)
+                                //.placeholder(android.R.drawable.gallery_thumb)
+                                //.crossFade(android.R.anim.fade_in, 250)
+                                .animate(android.R.anim.fade_in)
+                                .into(movieView).getRequest());
+                    }
                 }
             });
         }
@@ -215,7 +229,6 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         private void addGlideRequest(Request newGlideRequest) {
             lastGlideRequest = newGlideRequest;
         }
-
     }
 
 }
