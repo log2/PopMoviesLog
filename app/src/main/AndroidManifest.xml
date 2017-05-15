@@ -15,7 +15,6 @@
 
         <activity
             android:name=".main.MainActivity"
-            android:configChanges="orientation|screenSize"
             android:label="@string/popular_movies"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
