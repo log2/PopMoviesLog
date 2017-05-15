@@ -42,9 +42,8 @@ import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
-    public static final String LIST_TYPE = "listType";
+    public static final String LIST_TYPE = "listType"; //NON-NLS
     private static final int FAVORITE_LOADER = 42;
-    private static final String TAG = MainActivity.class.getSimpleName();
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.rv_movies)
@@ -219,10 +218,6 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra(getString(R.string.extraMovieContentKey), movie);
         intent.putExtra(ScrollingActivity.MOVIE_LIST_TYPE, listType.toString());
         startActivity(intent);
-    }
-
-    private void showSnackbar(String s) {
-        SignallingUtils.alert(this, recyclerView, s);
     }
 
     private void startLoading(Bundle queryBundle) {

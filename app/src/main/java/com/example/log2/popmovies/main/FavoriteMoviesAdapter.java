@@ -36,7 +36,6 @@ import retrofit2.Callback;
  * Created by Lorenzo on 21/01/2017.
  */
 public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAdapter.MoviesViewHolder> {
-    private static final String TAG = FavoriteMoviesAdapter.class.getSimpleName();
     private final Context context;
     private final ListType listType;
     private final MovieClickListener movieClickListener;
@@ -47,11 +46,6 @@ public class FavoriteMoviesAdapter extends RecyclerView.Adapter<FavoriteMoviesAd
         this.listType = listType;
         this.cursor = cursor;
         this.movieClickListener = movieClickListener;
-    }
-
-    @Override
-    public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
-        super.onDetachedFromRecyclerView(recyclerView);
     }
 
     @Override

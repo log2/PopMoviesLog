@@ -2,7 +2,6 @@ package com.example.log2.popmovies.main;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +33,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
+import timber.log.Timber;
 
 
 /**
@@ -111,7 +111,7 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            Log.v(TAG, MessageFormat.format("Clicked {0}", adapterPosition));
+            Timber.v("Clicked %d", adapterPosition);
 
             movieClickListener.clickMovie(movie);
         }
@@ -192,16 +192,16 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MoviesView
                 @Override
                 public void onFailure(Call<MovieListResponse> call, Throwable t) {
                     if (call.isCanceled() && (t instanceof IOException && t.getMessage().contains("Canceled"))) {// Just ignore
-                        Log.v(TAG, "Ignoring an already canceled call");
+                        Timber.v("Ignoring an already canceled call");
                     } else {
                         boolean canRetry = t instanceof SocketTimeoutException;
-                        Log.w(TAG, MessageFormat.format("Could not get page {0}, listType = {1} due to: {2}", page, listType, t.getMessage()));
+                        Timber.w("Could not get page %d, listType = %s due to: %s", page, listType, t.getMessage());
                         if (canRetry) {
                             SignallingUtils.alert(context, viewForSnackbar, R.string.networkIssues);
-                            Log.v(TAG, "Retrying call...");
+                            Timber.v("Retrying call...");
                             onMovie(listType, position, listener);
                         } else {
-                            Log.wtf(TAG, "Could not retry due to fatal error, app is stuck", t);
+                            Timber.wtf("Could not retry due to fatal error, app is stuck", t);
                             SignallingUtils.alert(context, viewForSnackbar, R.string.networkStuck);
                         }
                     }

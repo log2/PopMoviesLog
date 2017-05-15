@@ -25,7 +25,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,14 +46,15 @@ import com.example.log2.popmovies.model.Trailer;
 import com.example.log2.popmovies.model.TrailerListResponse;
 import com.example.log2.popmovies.network.APIHelper;
 
-import java.text.MessageFormat;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Response;
+import timber.log.Timber;
 
+@SuppressWarnings("CanBeFinal")
 public class ScrollingActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Boolean> {
     public static final String MOVIE_LIST_TYPE = Intent.EXTRA_TEXT;
@@ -347,7 +347,7 @@ public class ScrollingActivity extends AppCompatActivity
 
         fillTrailers();
         fillReviews();
-        Log.v(TAG, MessageFormat.format("Getting poster {0}", movie.posterPath));
+        Timber.v("Getting poster %s", movie.posterPath);
 
         Glide.with(this).load(getApiHelper().getPosterWide(movie.posterPath))
                 .priority(Priority.IMMEDIATE)
@@ -409,9 +409,9 @@ public class ScrollingActivity extends AppCompatActivity
                 List<Trailer> trailers = response.body().trailers;
                 if (trailers == null || trailers.isEmpty()) {
                     rvTrailers.setVisibility(View.GONE);
-                    Log.v(TAG, MessageFormat.format("Raw body: {0}", response.raw().body()));
+                    Timber.v("Raw body: %s", response.raw().body());
                 } else {
-                    Log.v(TAG, MessageFormat.format("Got {0} trailers to display", trailers.size()));
+                    Timber.v("Got %d trailers to display", trailers.size());
                     trailersAdapter.setTrailers(trailers.toArray(new Trailer[]{}));
                     rvTrailers.setHasFixedSize(true);
                     rvTrailers.setClipToPadding(true);
@@ -434,10 +434,6 @@ public class ScrollingActivity extends AppCompatActivity
         }));
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
 
     public CustomApplication getCustomApplication() {
         return ((CustomApplication) getApplication());

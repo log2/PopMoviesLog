@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("CanBeFinal")
 public final class Trailer implements Parcelable {
     public static final Creator<Trailer> CREATOR = new Creator<Trailer>() {
         @Override

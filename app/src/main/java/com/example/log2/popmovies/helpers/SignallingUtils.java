@@ -10,6 +10,7 @@ import android.widget.Toast;
  * Created by gallucci on 14/05/2017.
  */
 
+@SuppressWarnings("CanBeFinal")
 public class SignallingUtils {
     public static void alert(Context context, View view, @StringRes int id) {
         if (view == null)

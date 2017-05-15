@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+@SuppressWarnings("CanBeFinal")
 public final class Review implements Parcelable {
 
     public static final Creator<Review> CREATOR = new Creator<Review>() {

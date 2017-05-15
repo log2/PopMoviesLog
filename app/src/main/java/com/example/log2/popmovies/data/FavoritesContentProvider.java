@@ -126,7 +126,7 @@ public class FavoritesContentProvider extends ContentProvider {
 
             case FAVORITE_WITH_ID:
                 String id = uri.getPathSegments().get(1);
-                favoritesDeleted = db.delete(TABLE_NAME, "_id=?", new String[]{id});
+                favoritesDeleted = db.delete(TABLE_NAME, "_id=?", new String[]{id}); //NON-NLS
                 break;
 
             default:

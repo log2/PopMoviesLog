@@ -48,9 +48,8 @@ import static okhttp3.logging.HttpLoggingInterceptor.Level.NONE;
 public class APIHelper {
     public static final String RETRY_AFTER = "Retry-After"; //NON-NLS
     public static final String X_RATE_LIMIT_REMAINING = "X-RateLimit-Remaining"; //NON-NLS
-    private static final String TAG = APIHelper.class.getSimpleName();
     private final Context context;
-    private ServiceHolder serviceHolder;
+    private final ServiceHolder serviceHolder;
     private WeakReference<View> viewRef;
 
     public APIHelper(Context context) {
@@ -63,7 +62,7 @@ public class APIHelper {
     }
 
     private static String obfuscateKey(String text) {
-        return text.replaceAll("api_key=[0-9a-f]+", "api_key=xxx");
+        return text.replaceAll("api_key=[0-9a-f]+", "api_key=xxx"); //NON-NLS NON-NLS
     }
 
     public static boolean detectNetwork(Context context) {
@@ -171,13 +170,13 @@ public class APIHelper {
      */
     static class ServiceHolder {
         private static final int lowLimit = 1;
-        private static final String CACHE_CONTROL = "Cache-Control";
+        private static final String CACHE_CONTROL = "Cache-Control"; //NON-NLS
         final TheMovieDbService service;
         private final Handler handler = new Handler();
         private final Context context;
+        private final List<Runnable> paused = new ArrayList<>();
         // At least one slot for calls
         private int remaining = 1;
-        private List<Runnable> paused = new ArrayList<>();
         private volatile boolean retryAllowed = true;
 
         ServiceHolder(Context context) {
@@ -235,7 +234,7 @@ public class APIHelper {
 
         private Cache provideCache() {
             try {
-                return new Cache(new File(context.getCacheDir(), "http-cache"),
+                return new Cache(new File(context.getCacheDir(), "http-cache"), //NON-NLS
                         50 * 1024 * 1024); // 50 MiB
             } catch (Exception e) {
                 Timber.e(e, "Could not create cache!");
