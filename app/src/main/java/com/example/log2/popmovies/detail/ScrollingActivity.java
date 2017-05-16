@@ -335,6 +335,10 @@ public class ScrollingActivity extends AppCompatActivity
                 bindMovie(movie);
         }
         setImageFrameSize();
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
     private void bindMovie(Movie movie) {
